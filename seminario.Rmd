@@ -16,5 +16,13 @@ datos_zaragoza
 str(datos_zaragoza)
 summary(datos_zaragoza)
 View(datos_zaragoza)
+
+library(readxl)
+datos_paisVasco <- datos <- read_excel("INPUT/DATA/control_analitico.xlsx")
+str(datos_paisVasco)
+summary(datos_paisVasco)
+View(datos_paisVasco)
+
+
 ```
 
