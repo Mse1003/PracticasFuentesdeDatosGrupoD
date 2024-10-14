@@ -1,6 +1,6 @@
 ---
 title: "seminario"
-author: "Álvaro Martín"
+author: "Álvaro Martín,Miguel Soriano, Andres Arribas"
 date: "`r Sys.Date()`"
 output: html_document
 ---
