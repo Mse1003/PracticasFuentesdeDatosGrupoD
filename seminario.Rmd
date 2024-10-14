@@ -9,3 +9,12 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(xml2)
+datos_zaragoza <- xml2::read_xml("INPUT/DATA/calidad-agua zaragoza.xml")
+datos_zaragoza
+str(datos_zaragoza)
+summary(datos_zaragoza)
+View(datos_zaragoza)
+```
+
