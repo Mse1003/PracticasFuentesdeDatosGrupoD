@@ -33,70 +33,6 @@ datos_zaragoza
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```{r}
 #carga de datos JSON
 
@@ -108,7 +44,24 @@ CyL <- fromJSON(file = "INPUT/DATA/calidad-de-las-aguas-de-consumo-humano.json")
 CyL
 head(CyL)
 
-
 #carga de datos
+```
+
+
+
+
+
+
+
+```{r}
+#carga de datos Andrés
+library(readr)
+Gijon <- read_delim("INPUT/DATA/731.csv", 
+                      delim = ";", escape_double = FALSE, trim_ws = TRUE)
+Gijon
+summary(Gijon)
+View(Gijon)
+
+table(Gijon$T.RED)
 ```
 
