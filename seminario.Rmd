@@ -10,11 +10,20 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+library(tidyverse)
 library(readxl)
-datos_paisVasco <- datos <- read_excel("INPUT/DATA/control_analitico.xlsx")
+datos_paisVasco <- read_excel("INPUT/DATA/control_analitico.xlsx")
 str(datos_paisVasco)
 summary(datos_paisVasco)
 View(datos_paisVasco)
+
+library(xml2)
+library(XML)
+datos_zaragoza <- read_xml(x = "INPUT/DATA/calidad-agua zaragoza.xml")
+str(datos_zaragoza)
+datos_zaragoza_mxl <- xmlParse(datos_zaragoza)
+datos_zaragoza
+
 
 
 ```
