@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+<<<<<<< HEAD
 
 
 
@@ -243,3 +244,15 @@ head(CyL)
 
 
 
+=======
+```{r}
+library(readxl)
+datos_paisVasco <- datos <- read_excel("INPUT/DATA/control_analitico.xlsx")
+str(datos_paisVasco)
+summary(datos_paisVasco)
+View(datos_paisVasco)
+
+
+```
+
+>>>>>>> b97adea3e02a42aeecb03cefc011aee1fec5181a
