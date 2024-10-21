@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+<<<<<<< HEAD
 
 
 
@@ -211,5 +212,24 @@ summary(Gijon)
 View(Gijon)
 
 table(Gijon$T.RED)
+=======
+```{r}
+library(tidyverse)
+library(readxl)
+datos_paisVasco <- read_excel("INPUT/DATA/control_analitico.xlsx")
+str(datos_paisVasco)
+summary(datos_paisVasco)
+View(datos_paisVasco)
+
+library(xml2)
+library(XML)
+datos_zaragoza <- read_xml(x = "INPUT/DATA/calidad-agua zaragoza.xml")
+str(datos_zaragoza)
+datos_zaragoza_mxl <- xmlParse(datos_zaragoza)
+datos_zaragoza
+
+
+
+>>>>>>> 04d2d1c632f36cbfbe4c3a18bdaf61f1e872b167
 ```
 
