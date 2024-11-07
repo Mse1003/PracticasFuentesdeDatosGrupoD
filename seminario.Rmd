@@ -1,69 +1,62 @@
 ---
-title: "seminario"
+title: "titulo?"
+subtitle: "Fuentes de datos Biomédicas y Web semántica, Grado de Ingeniería de la Salud"
 author: "Álvaro Martín,Miguel Soriano, Andres Arribas"
 date: "`r Sys.Date()`"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# **Introducción**
+
+
+
+## **Objetivos**
+
 ```{r}
-#carga de datos xlsx
+#librerias
 library(tidyverse)
 library(readxl)
-datos_paisVasco <- read_excel("INPUT/DATA/control_analitico.xlsx")
+library(readr)
+library(jsonlite)
+```
+
+
+```{r}
+# Cargas de datos
+
+#esta base de datos tiene informacion pero no es relevante al ser del pais vasco
+#carga de datos xlsx sobre calidad de agua en pais vasco
+datos_paisVasco <- read_excel(INPUT/DATA/control_analitico.xlsx)
 str(datos_paisVasco)
 summary(datos_paisVasco)
 View(datos_paisVasco)
 
-#carga de datos xml
-library(xml2)
-library(XML)
-datos_zaragoza <- read_xml(x = "INPUT/DATA/calidad-agua zaragoza.xml")
-str(datos_zaragoza)
-datos_zaragoza_mxl <- xmlParse(datos_zaragoza)
-datos_zaragoza
+#carga de datos csv sobre calidad de agua en gijon
+Agua_gijon <- read_delim("INPUT/DATA/731.csv", 
+                      delim = ",", escape_double = FALSE, trim_ws = TRUE)
+Agua_gijon
+summary(Agua_gijon)
+View(Agua_gijon)
+table(Agua_gijon$T.RED)
 
+#carga de datos json sobre los fumadores en asturias incluyendo a gijon
+#esta hay que abrirla bien
+library(jsonlite)
+library(dplyr)
+datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE)
+head(datos_fumadores)
+str(datos_fumadores)
+spread_(datos_fumadores)
+view(datos_fumadores)
 
 
 ```
 
-
-
-
-
-
-```{r}
-#carga de datos JSON 
-
-library(tidyverse)
-library(rjson)
-
-CyL <- fromJSON(file = "INPUT/DATA/calidad-de-las-aguas-de-consumo-humano.json")
-
-CyL
-head(CyL)
-
-#carga de datos
-```
-
-
-
-
-
-
-
-```{r}
-#carga de datos csv
-library(readr)
-Gijon <- read_delim("INPUT/DATA/731.csv", 
-                      delim = ";", escape_double = FALSE, trim_ws = TRUE)
-Gijon
-summary(Gijon)
-View(Gijon)
-
-table(Gijon$T.RED)
-```
 
