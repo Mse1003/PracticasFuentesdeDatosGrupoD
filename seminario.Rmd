@@ -19,6 +19,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## **Objetivos**
 
+##**cosas por hacer**
+-hacer intro,nombre y objetivos del tema
+-meter alguna base de datos mas
+-terminar de cargar bien las tablas
+-hacer las uniones de datos
+
 ```{r}
 #librerias
 library(tidyverse)
