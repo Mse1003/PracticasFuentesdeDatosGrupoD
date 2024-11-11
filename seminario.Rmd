@@ -64,25 +64,6 @@ table(Agua_gijon$T.RED)
 
 #carga de datos json sobre los fumadores en asturias incluyendo a gijon
 #esta hay que abrirla bien
-library(jsonlite)
-library(dplyr)
-datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE)
-head(datos_fumadores)
-str(datos_fumadores)
-view(datos_fumadores)
-
-#carga de datos xlsx sobre algunas enfermedades en asturias, entre ellas el cancer de colon
-datosEnfermedades <-  read_excel("INPUT/DATA/03009d.xlsx")
-str(datosEnfermedades)
-summary(datosEnfermedades)
-View(datosEnfermedades)
-
-
-```
-
-
-```{r}
-
 # Cargar las librerías necesarias
 library(tidyverse)
 library(jsonlite)
@@ -98,3 +79,47 @@ datos_fumadores <- datos_fumadores %>%
 # Visualizar los datos para confirmar la estructura
 View(datos_fumadores)
 summary(datos_fumadores)
+
+
+
+#carga de datos xlsx sobre algunas enfermedades en asturias, entre ellas el cancer de colon
+datosEnfermedades <-  read_excel("INPUT/DATA/03009d.xlsx")
+str(datosEnfermedades)
+summary(datosEnfermedades)
+View(datosEnfermedades)
+
+
+```
+
+
+```{r}
+# Cargar librerías necesarias
+library(tidyverse)
+library(jsonlite)
+
+# Cargar el archivo JSON de fumadores
+datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE) %>%
+  as_tibble()
+
+# Separar la columna 'Nombre' y filtrar por región
+fumadores_asturias <- datos_fumadores %>%
+  separate(Nombre, into = c("Sexo", "Region", "Categoria"), sep = ", ", fill = "right") %>%
+  filter(Region == "Asturias (Principado de)")
+
+# Extraer el primer valor de cada lista en MetaData y Data, si hay múltiples valores
+fumadores_asturias_expandido <- fumadores_asturias %>%
+  mutate(
+    Variable_Nombre = map(MetaData, ~ .x[["Variable.Nombre"]][1]),
+    Variable_Codigo = map(MetaData, ~ .x[["Variable.Codigo"]][1]),
+    Valor = map(Data, ~ .x[["Valor"]][1])
+  ) %>%
+  # Convertir las listas resultantes en columnas de caracteres para un dataframe limpio
+  unnest(c(Variable_Nombre, Variable_Codigo, Valor))
+
+# Seleccionar columnas relevantes
+fumadores_asturias_final <- fumadores_asturias_expandido %>%
+  select(Sexo, Region, Categoria, Variable_Nombre, Variable_Codigo, Valor)
+
+# Verificar los resultados
+View(fumadores_asturias_final)
+summary(fumadores_asturias_final)
