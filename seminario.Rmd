@@ -66,10 +66,30 @@ table(Agua_gijon$T.RED)
 
 #carga de datos json sobre los fumadores en asturias incluyendo a gijon
 #esta hay que abrirla bien
+<<<<<<< HEAD
 datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE)
 head(datos_fumadores)
 str(datos_fumadores)
 view(datos_fumadores)
+=======
+# Cargar las librerías necesarias
+library(tidyverse)
+library(jsonlite)
+
+# Cargar el archivo JSON de fumadores y transformarlo en un tibble
+datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE) %>%
+  as_tibble()
+
+# Separar la columna 'Nombre' en 'Sexo', 'Region', y 'Categoria' usando la coma como delimitador
+datos_fumadores <- datos_fumadores %>%
+  separate(Nombre, into = c("Sexo", "Region", "Categoria"), sep = ", ", fill = "right")
+
+# Visualizar los datos para confirmar la estructura
+View(datos_fumadores)
+summary(datos_fumadores)
+
+
+>>>>>>> e4e95aa328475f0613882cd7459f279d547f8c96
 
 #carga de datos xlsx sobre algunas enfermedades en asturias, entre ellas el cancer de colon
 datosEnfermedades <-  read_excel("INPUT/DATA/03009d.xlsx")
@@ -77,7 +97,45 @@ str(datosEnfermedades)
 summary(datosEnfermedades)
 View(datosEnfermedades)
 
+<<<<<<< HEAD
 ```
 # Cambios en las fuentes de datos
 
 ```{r}
+=======
+
+```
+
+
+```{r}
+# Cargar librerías necesarias
+library(tidyverse)
+library(jsonlite)
+
+# Cargar el archivo JSON de fumadores
+datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE) %>%
+  as_tibble()
+
+# Separar la columna 'Nombre' y filtrar por región
+fumadores_asturias <- datos_fumadores %>%
+  separate(Nombre, into = c("Sexo", "Region", "Categoria"), sep = ", ", fill = "right") %>%
+  filter(Region == "Asturias (Principado de)")
+
+# Extraer el primer valor de cada lista en MetaData y Data, si hay múltiples valores
+fumadores_asturias_expandido <- fumadores_asturias %>%
+  mutate(
+    Variable_Nombre = map(MetaData, ~ .x[["Variable.Nombre"]][1]),
+    Variable_Codigo = map(MetaData, ~ .x[["Variable.Codigo"]][1]),
+    Valor = map(Data, ~ .x[["Valor"]][1])
+  ) %>%
+  # Convertir las listas resultantes en columnas de caracteres para un dataframe limpio
+  unnest(c(Variable_Nombre, Variable_Codigo, Valor))
+
+# Seleccionar columnas relevantes
+fumadores_asturias_final <- fumadores_asturias_expandido %>%
+  select(Sexo, Region, Categoria, Variable_Nombre, Variable_Codigo, Valor)
+
+# Verificar los resultados
+View(fumadores_asturias_final)
+summary(fumadores_asturias_final)
+>>>>>>> e4e95aa328475f0613882cd7459f279d547f8c96
