@@ -64,54 +64,6 @@ summary(Agua_gijon)
 View(Agua_gijon)
 table(Agua_gijon$T.RED)
 
-#carga de datos json sobre los fumadores en asturias incluyendo a gijon
-#esta hay que abrirla bien
-<<<<<<< HEAD
-datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE)
-head(datos_fumadores)
-str(datos_fumadores)
-view(datos_fumadores)
-=======
-# Cargar las librerías necesarias
-library(tidyverse)
-library(jsonlite)
-
-# Cargar el archivo JSON de fumadores y transformarlo en un tibble
-datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE) %>%
-  as_tibble()
-
-# Separar la columna 'Nombre' en 'Sexo', 'Region', y 'Categoria' usando la coma como delimitador
-datos_fumadores <- datos_fumadores %>%
-  separate(Nombre, into = c("Sexo", "Region", "Categoria"), sep = ", ", fill = "right")
-
-# Visualizar los datos para confirmar la estructura
-View(datos_fumadores)
-summary(datos_fumadores)
-
-
->>>>>>> e4e95aa328475f0613882cd7459f279d547f8c96
-
-#carga de datos xlsx sobre algunas enfermedades en asturias, entre ellas el cancer de colon
-datosEnfermedades <-  read_excel("INPUT/DATA/03009d.xlsx")
-str(datosEnfermedades)
-summary(datosEnfermedades)
-View(datosEnfermedades)
-
-<<<<<<< HEAD
-```
-# Cambios en las fuentes de datos
-
-```{r}
-=======
-
-```
-
-
-```{r}
-# Cargar librerías necesarias
-library(tidyverse)
-library(jsonlite)
-
 # Cargar el archivo JSON de fumadores
 datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE) %>%
   as_tibble()
@@ -138,4 +90,47 @@ fumadores_asturias_final <- fumadores_asturias_expandido %>%
 # Verificar los resultados
 View(fumadores_asturias_final)
 summary(fumadores_asturias_final)
->>>>>>> e4e95aa328475f0613882cd7459f279d547f8c96
+
+#carga de datos xlsx sobre algunas enfermedades en asturias, entre ellas el cancer de colon
+datosEnfermedades <-  read_excel("INPUT/DATA/03009d.xlsx")
+str(datosEnfermedades)
+summary(datosEnfermedades)
+View(datosEnfermedades)
+
+```
+
+# Cambios en las fuentes de datos
+Este paso es necesario ya que al relacionar todas las tablas entre si necesitamos que aquellas columnas que son comunes tengan los mismos nombres, por ello se ha requerido que todos los nombres de las comunidades y ciudades autonomas presentes sean cambiados a nombres comunes elegidos por el grupo. Por otro lado hemos usado el select para seleccionar las columnas de datos que nos resultan de interes para el estudio.
+
+```{r}
+agua_gijon <- agua_gijons%>%
+  mutate(
+    CCAA= case_when( ## cambiamos el nombre con un case_When
+      fumadores$`Comunidades y Ciudades Autónomas`== "Andalucía" ~ "Andalucia",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Aragón" ~ "Aragon",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Asturias (Principado de)" ~ "Asturias",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Balears (Illes)" ~ "Baleares",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Canarias" ~ "Canarias",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Cantabria" ~ "Cantabria",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Castilla y León" ~ "CyL",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Castilla - La Mancha" ~ "Castilla la Mancha",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Cataluña" ~ "Cataluña",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Comunitat Valenciana" ~ "C.Valencia",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Extremadura" ~ "Extremadura",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Galicia" ~ "Galicia",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Madrid (Comunidad de)" ~ "Madrid",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Murcia (Región de)" ~ "Murcia",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Navarra (Comunidad Foral de)" ~ "Navarra",
+      fumadores$`Comunidades y Ciudades Autónomas`== "País Vasco" ~ "País Vasco",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Rioja (La)" ~ "La Rioja",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Ceuta (Ciudad Autónoma de)" ~ "Ceuta",
+      fumadores$`Comunidades y Ciudades Autónomas`== "Melilla (Ciudad Autónoma de)" ~ "Melilla",
+    )) %>%
+select(`CCAA`,`Consumo de tabaco`,Total,) %>%
+  na.exclude()%>%
+  filter(`Consumo de tabaco` != "TOTAL")
+fumadores
+      
+```
+
+
