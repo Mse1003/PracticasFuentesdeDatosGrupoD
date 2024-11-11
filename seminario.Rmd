@@ -31,7 +31,7 @@ El propósito principal de este estudio es explorar y entender la relación entr
 
 3. **Investigar la incidencia del cáncer de colon**: Analizar la incidencia del cáncer en la region de asturias y su posible correlación con el tabaquismo y la calidad del agua.
 
-5. **Explorar la interacción entre estos factores**: Investigar cómo el tabaquismo y la calidad del agua pueden interactuar entre sí y su impacto conjunto en la incidencia del cáncer de colon basandonos en los datos hallados de la region de asturias.
+4. **Explorar la interacción entre estos factores**: Investigar cómo el tabaquismo y la calidad del agua pueden interactuar entre sí y su impacto conjunto en la incidencia del cáncer de colon basandonos en los datos hallados de la region de asturias.
 
 A través de estos objetivos, esperamos proporcionar una visión más completa de cómo estos factores pueden influir en la salud humana y contribuir al conocimiento de la incidencia del cáncer de colon.
 
@@ -49,7 +49,7 @@ En este apartado añadimos las diferentes fuentes de datos que hemos utilizado p
 ```{r}
 #esta base de datos tiene informacion pero no es relevante al ser del pais vasco
 #carga de datos xlsx sobre calidad de agua en pais vasco
-datos_paisVasco <- read_excel(INPUT/DATA/control_analitico.xlsx)
+datos_paisVasco <- read_excel("INPUT/DATA/control_analitico.xlsx")
 str(datos_paisVasco)
 summary(datos_paisVasco)
 View(datos_paisVasco)
@@ -72,7 +72,12 @@ str(datos_fumadores)
 spread_(datos_fumadores)
 view(datos_fumadores)
 
-#falta la carga de datos del cancer de colon
+#carga de datos xlsx sobre algunas enfermedades en asturias, entre ellas el cancer de colon
+datosEnfermedades <-  read_excel("INPUT/DATA/03009d.xlsx")
+str(datosEnfermedades)
+summary(datosEnfermedades)
+View(datosEnfermedades)
+
 
 ```
 
