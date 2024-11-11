@@ -69,7 +69,6 @@ library(dplyr)
 datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE)
 head(datos_fumadores)
 str(datos_fumadores)
-spread_(datos_fumadores)
 view(datos_fumadores)
 
 #carga de datos xlsx sobre algunas enfermedades en asturias, entre ellas el cancer de colon
@@ -79,6 +78,21 @@ summary(datosEnfermedades)
 View(datosEnfermedades)
 
 
-```
+# Cargar las librerías necesarias
+library(tidyverse)
+library(jsonlite)
+
+# Cargar el archivo JSON de fumadores y transformarlo en un tibble
+datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE) %>%
+  as_tibble()
+
+# Separar la columna 'Nombre' en 'Sexo', 'Region', y 'Categoria' usando la coma como delimitador
+datos_fumadores <- datos_fumadores %>%
+  separate(Nombre, into = c("Sexo", "Region", "Categoria"), sep = ", ", fill = "right")
+
+# Visualizar los datos para confirmar la estructura
+View(datos_fumadores)
+summary(datos_fumadores)
+
 
 
