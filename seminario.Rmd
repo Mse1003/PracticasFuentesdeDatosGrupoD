@@ -1,5 +1,5 @@
 ---
-title: "titulo?"
+title: "seminario fuentes sobre el impacto del agua y el tabaquismo en el cancer de colon"
 subtitle: "Fuentes de datos Biomédicas y Web semántica, Grado de Ingeniería de la Salud"
 author: "Álvaro Martín,Miguel Soriano, Andres Arribas"
 date: "`r Sys.Date()`"
@@ -14,29 +14,39 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # **Introducción**
+El cáncer de colon es una de las enfermedades oncológicas más comune, la cual ocasiona incontables perdidas cada año en todo el mundo. A lo largo de este proyecto, tratamos distintas bases de datos donde se estudia su prevalencia, su imapcto y como se relaciona con dos importantes factores que afectan a la salud: el tabaquismo y la calidad del agua.
 
+Por un lado, el tabaquismo, ampliamente estudiado como factor de riesgo para diferentes tipos de cáncer, afectando tambien al colon, dado que las sustancias químicas del tabaco dañan las células intestinales, promoviendo su crecimiento anormal.
 
+Por otro lado, la calidad del agua también es crucial en la salud gastrointestinal ya que suexposición a químicos nocivos puede afectar negativamente la salud digestiva.
+
+Hemos elegido centrarnos solo en la region de asturias en españa dados los datos encontrados para explorar esta posible relacion entre estos dos factores y el cancer de colon
 
 ## **Objetivos**
+El propósito principal de este estudio es explorar y entender la relación entre el tabaquismo, la calidad del agua, y la incidencia del cáncer de colon en la region de asturias. Para lograr esto, hemos establecido los siguientes objetivos específicos:
 
-##**cosas por hacer**
--hacer intro,nombre y objetivos del tema
--meter alguna base de datos mas
--terminar de cargar bien las tablas
--hacer las uniones de datos
+1. **Analizar la prevalencia del tabaquismo**: Estudiar la prevalencia del tabaquismo en la region de asturias y su correlación con la incidencia del cáncer de colon.
 
+2. **Evaluar la calidad del agua**: Investigar la calidad del agua en la region de asturias y su posible relación con la incidencia del cáncer de colon.
+
+3. **Investigar la incidencia del cáncer de colon**: Analizar la incidencia del cáncer en la region de asturias y su posible correlación con el tabaquismo y la calidad del agua.
+
+5. **Explorar la interacción entre estos factores**: Investigar cómo el tabaquismo y la calidad del agua pueden interactuar entre sí y su impacto conjunto en la incidencia del cáncer de colon basandonos en los datos hallados de la region de asturias.
+
+A través de estos objetivos, esperamos proporcionar una visión más completa de cómo estos factores pueden influir en la salud humana y contribuir al conocimiento de la incidencia del cáncer de colon.
+
+# Importación de las librerias necesarias 
+En este apartado añadimos todas las librerias necesarias para realizar el trabajo
 ```{r}
-#librerias
 library(tidyverse)
 library(readxl)
 library(readr)
 library(jsonlite)
 ```
+# Importacion de las fuentes de datos 
 
-
+En este apartado añadimos las diferentes fuentes de datos que hemos utilizado para el estudio directamente utilizando los formatos csv y JSON para poder manipular los datos
 ```{r}
-# Cargas de datos
-
 #esta base de datos tiene informacion pero no es relevante al ser del pais vasco
 #carga de datos xlsx sobre calidad de agua en pais vasco
 datos_paisVasco <- read_excel(INPUT/DATA/control_analitico.xlsx)
@@ -62,6 +72,7 @@ str(datos_fumadores)
 spread_(datos_fumadores)
 view(datos_fumadores)
 
+#falta la carga de datos del cancer de colon
 
 ```
 
