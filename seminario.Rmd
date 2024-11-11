@@ -78,6 +78,11 @@ summary(datosEnfermedades)
 View(datosEnfermedades)
 
 
+```
+
+
+```{r}
+
 # Cargar las librerías necesarias
 library(tidyverse)
 library(jsonlite)
@@ -93,6 +98,3 @@ datos_fumadores <- datos_fumadores %>%
 # Visualizar los datos para confirmar la estructura
 View(datos_fumadores)
 summary(datos_fumadores)
-
-
-
