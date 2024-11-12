@@ -54,15 +54,57 @@ En este apartado añadimos las diferentes fuentes de datos que hemos utilizado p
 datos_paisVasco <- read_excel("INPUT/DATA/control_analitico.xlsx")
 str(datos_paisVasco)
 summary(datos_paisVasco)
-View(datos_paisVasco)
+#View(datos_paisVasco)
 
 #carga de datos csv sobre calidad de agua en gijon
 Agua_gijon <- read_delim("INPUT/DATA/731.csv", 
                       delim = ",", escape_double = FALSE, trim_ws = TRUE)
 Agua_gijon
 summary(Agua_gijon)
-View(Agua_gijon)
+#View(Agua_gijon)
 table(Agua_gijon$T.RED)
+
+
+#carga de datos json sobre los fumadores en asturias incluyendo a gijon
+#esta hay que abrirla bien
+# Cargar las librerías necesarias
+library(tidyverse)
+library(jsonlite)
+
+# Cargar el archivo JSON de fumadores y transformarlo en un tibble
+datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE) %>%
+  as_tibble()
+
+# Separar la columna 'Nombre' en 'Sexo', 'Region', y 'Categoria' usando la coma como delimitador
+datos_fumadores <- datos_fumadores %>%
+  separate(Nombre, into = c("Sexo", "Region", "Categoria"), sep = ", ", fill = "right")
+
+# Visualizar los datos para confirmar la estructura
+#View(datos_fumadores)
+summary(datos_fumadores)
+
+
+#carga de cancer de colon
+# Cargar la librería necesaria
+library(readxl)
+
+# Cargar el archivo Excel, omitiendo las primeras 6 filas y usando la fila 7 como encabezado
+datosEnfermedades <- read_excel("INPUT/DATA/03009d.xlsx", skip = 5)
+
+# Visualizar la tabla general
+#View(datosEnfermedades)
+summary(datosEnfermedades)
+
+
+
+
+```
+
+
+```{r}
+# Cargar librerías necesarias
+library(tidyverse)
+library(jsonlite)
 
 # Cargar el archivo JSON de fumadores
 datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE) %>%
@@ -88,7 +130,7 @@ fumadores_asturias_final <- fumadores_asturias_expandido %>%
   select(Sexo, Region, Categoria, Variable_Nombre, Variable_Codigo, Valor)
 
 # Verificar los resultados
-View(fumadores_asturias_final)
+#View(fumadores_asturias_final)
 summary(fumadores_asturias_final)
 
 #carga de datos xlsx sobre algunas enfermedades en asturias, entre ellas el cancer de colon
@@ -132,5 +174,72 @@ select(`CCAA`,`Consumo de tabaco`,Total,) %>%
 fumadores
       
 ```
+
+
+=======
+#cancer de colon filtrado por hombre y mujer
+# Cargar la librería necesaria
+library(readxl)
+library(dplyr)
+
+# Cargar el archivo Excel, omitiendo las filas iniciales de encabezado
+datosEnfermedades <- read_excel("INPUT/DATA/03009d.xlsx", skip = 5)
+
+# Filtrar filas relevantes para "Cáncer de colon" y sus subtotales
+cancer_colon <- datosEnfermedades %>%
+  filter(str_detect(datosEnfermedades[[1]], "Cáncer de colon|Total|Hombres|Mujeres")) %>%
+  slice(which(str_detect(datosEnfermedades[[1]], "Cáncer de colon")):
+        (which(str_detect(datosEnfermedades[[1]], "Cáncer de colon")) + 3))
+
+# Visualizar los datos filtrados de Cáncer de colon
+#View(cancer_colon)
+summary(cancer_colon)
+```
+
+
+```{r}
+# Cargar las librerías necesarias
+library(dplyr)
+library(tidyr)
+
+# Paso 1: Filtrar y preparar los datos de tabaquismo para Asturias
+# Aquí trabajamos con la tabla fumadores_asturias_final ya filtrada para Asturias
+fumadores_asturias_prevalencia <- fumadores_asturias_final %>%
+  filter(Categoria %in% c("Fumador diario", "Ex fumador")) %>%
+  select(Sexo, Categoria, Valor) %>%
+  spread(key = Categoria, value = Valor)
+
+# Visualizar la prevalencia de fumadores en Asturias
+#View(fumadores_asturias_prevalencia)
+
+# Paso 2: Preparar los datos de cáncer de colon para Asturias (ya específico para Asturias en la carga inicial)
+# Seleccionar solo las columnas que contienen datos mensuales
+cancer_colon_asturias <- datosEnfermedades %>%
+  filter(grepl("Cáncer de colon", .[[1]], ignore.case = TRUE)) %>%
+  select(-1) %>%
+  gather(key = "Mes", value = "Defunciones", -1)
+
+# Visualizar los datos de defunciones por cáncer de colon en Asturias
+#View(cancer_colon_asturias)
+
+# Paso 3: Realizar el análisis de correlación entre tabaquismo y cáncer de colon
+
+# Calcular la media de defunciones de cáncer de colon para cada mes
+cancer_colon_promedio <- cancer_colon_asturias %>%
+  group_by(Mes) %>%
+  summarise(Defunciones = mean(Defunciones, na.rm = TRUE))
+
+# Calcular la media de prevalencia de fumadores (Fumador diario y Ex fumador)
+fumadores_promedio <- fumadores_asturias_prevalencia %>%
+  summarise(Fumador_diario = mean(`Fumador diario`, na.rm = TRUE),
+            Ex_fumador = mean(`Ex fumador`, na.rm = TRUE))
+
+# Combinar ambos conjuntos de datos y calcular la correlación entre la prevalencia de fumadores diarios y defunciones por cáncer de colon
+correlacion_fumador_diario <- cor(cancer_colon_promedio$Defunciones, fumadores_promedio$Fumador_diario, use = "complete.obs")
+correlacion_ex_fumador <- cor(cancer_colon_promedio$Defunciones, fumadores_promedio$Ex_fumador, use = "complete.obs")
+
+
+print(paste("Correlación entre fumadores diarios y defunciones por cáncer de colon:", correlacion_fumador_diario))
+print(paste("Correlación entre ex fumadores y defunciones por cáncer de colon:", correlacion_ex_fumador))
 
 
