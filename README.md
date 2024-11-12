@@ -7,7 +7,7 @@
 > -**ALVARO MARTIN** ([amr1031\@alu.ubu.es](mailto:amr1031@alu.ubu.es))[📩](https://emojipedia.org/shortcodes)
 > - 3º GIS. / [Fuentes de datos biomédicas y webs semanticas GIS.](https://ubuvirtual.ubu.es/course/view.php?id=14468)[🎓](https://emojipedia.org/shortcodes)
 
-![🎓](IMAGENES/escudo UBU.jpeg)
+![🎓]("C:\Users\msest\OneDrive\Escritorio\cuarto año\fuentes\PracticasFuentesdeDatosGrupoD\INPUT\IMAGENES\escudo UBU.jpeg")
 
 ## Índice
 
