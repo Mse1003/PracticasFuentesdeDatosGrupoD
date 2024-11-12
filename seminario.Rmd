@@ -14,13 +14,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # **Introducción**
-El cáncer de colon es una de las enfermedades oncológicas más comune, la cual ocasiona incontables perdidas cada año en todo el mundo. A lo largo de este proyecto, tratamos distintas bases de datos donde se estudia su prevalencia, su imapcto y como se relaciona con dos importantes factores que afectan a la salud: el tabaquismo y la calidad del agua.
+El cáncer de colon es una de las enfermedades oncológicas más comunes, la cual ocasiona incontables perdidas cada año en todo el mundo. A lo largo de este proyecto, tratamos distintas bases de datos donde se estudia su prevalencia, su impacto y como se relaciona con dos importantes factores que afectan a la salud: el tabaquismo y la calidad del agua.
 
-Por un lado, el tabaquismo, ampliamente estudiado como factor de riesgo para diferentes tipos de cáncer, afectando tambien al colon, dado que las sustancias químicas del tabaco dañan las células intestinales, promoviendo su crecimiento anormal.
+Por un lado, el tabaquismo, es ampliamente estudiado como factor de riesgo para diferentes tipos de cáncer; afectando tambien al colon dado que las sustancias químicas del tabaco dañan las células intestinales promoviendo su crecimiento anormal.
 
-Por otro lado, la calidad del agua también es crucial en la salud gastrointestinal ya que suexposición a químicos nocivos puede afectar negativamente la salud digestiva.
+Por otro lado, la calidad del agua también es crucial en la salud gastrointestinal ya que su exposición a químicos nocivos puede afectar negativamente a la salud digestiva.
 
-Hemos elegido centrarnos solo en la region de asturias en españa dados los datos encontrados para explorar esta posible relacion entre estos dos factores y el cancer de colon
+Hemos elegido centrarnos solo en la region de Asturias en España dados los datos encontrados, los cuales hemos usado para explorar esta posible relacion entre estos dos factores y el cancer de colon.
 
 ## **Objetivos**
 El propósito principal de este estudio es explorar y entender la relación entre el tabaquismo, la calidad del agua, y la incidencia del cáncer de colon en la region de asturias. Para lograr esto, hemos establecido los siguientes objetivos específicos:
