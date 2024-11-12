@@ -5,7 +5,7 @@
 > -**MIGUEL SORIANO** ([mse1003\@alu.ubu.es](mailto:mse1003@alu.ubu.es))[📩](https://emojipedia.org/shortcodes)
 > -**ANDRES ARRIBAS** ([aaa1041\@alu.ubu.es](mailto:aaa1041@alu.ubu.es))[📩](https://emojipedia.org/shortcodes)
 > -**ALVARO MARTIN** ([amr1031\@alu.ubu.es](mailto:amr1031@alu.ubu.es))[📩](https://emojipedia.org/shortcodes)
-> - 3º GIS. / [Fuentes de datos biomédicas y webs semanticas GIS.](https://ubuvirtual.ubu.es/course/view.php?id=14468)[🎓](https://emojipedia.org/shortcodes)
+> - 3º INGENERIA DE LA SALUD / [Fuentes de datos biomédicas y webs semanticas GIS.](https://ubuvirtual.ubu.es/course/view.php?id=14468)[🎓](https://emojipedia.org/shortcodes)
 
 ![Escudo UBU](INPUT/IMAGENES/escudo UBU.jpeg)
 
