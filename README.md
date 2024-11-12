@@ -7,7 +7,7 @@
 > -**ALVARO MARTIN** ([amr1031\@alu.ubu.es](mailto:amr1031@alu.ubu.es))[📩](https://emojipedia.org/shortcodes)
 > - 3º GIS. / [Fuentes de datos biomédicas y webs semanticas GIS.](https://ubuvirtual.ubu.es/course/view.php?id=14468)[🎓](https://emojipedia.org/shortcodes)
 
-![🎓]("C:\Users\msest\OneDrive\Escritorio\cuarto año\fuentes\PracticasFuentesdeDatosGrupoD\INPUT\IMAGENES\escudo UBU.jpeg")
+![Escudo UBU](INPUT/IMAGENES/escudo UBU.jpeg)
 
 ## Índice
 
@@ -53,7 +53,7 @@ El propósito principal de este estudio es explorar y entender la relación entr
 
 - Investigar la incidencia del cáncer de colon en Asturias
 
-###**Objetivo 4**
+### **Objetivo 4**
 
 - Explorar la interacción entre todos estos factores y sacar una conclusion 
 
@@ -63,19 +63,19 @@ El propósito principal de este estudio es explorar y entender la relación entr
 El objetivo principal ha sido escogido debido a nuestra preocupacion sobre el tabaquismo actual y su impacto en la pobalcion, y una anecdotica conversacion entre los participantes del proyecto donde comparabamos el agua del sur de españa con la del norte y terminamos interesandonos por su efecto en la salud. De esta manera y tras la busqueda de bases de datos utiles llegamos a la conclusion de utilizar la provinicia de Asturias (sobretodo porque era donde habia mayor cantidad de informacion) para centrar las comparaciones y coger los datos de la investigacion.
 A continuacion desarrollamos brevemente una explicacion de cada objetivo y el porqué de estas elecciones.
 
-### **Explicación Objetivo 1**;
+### **Explicación Objetivo 1**
 
 Como se explica en la introduccion a este apartado, desde un principio queriamos enfocar el **tabquismo** como nucleo de nuestra investigacion ya que nuestra curiosidad y preocupacion por su impacto en la poblacion actual era algo que llamaba nuestra atención. Ademas en Asturias hay mucha informacion sobre su consumo y sus consecuencias.
 
-### **Explicación Objetivo 2**;
+### **Explicación Objetivo 2**
 
 Este objetivo también es brevemente explicado en la introduccion a este apartado; y de forma bastante similar tambien se convirtió en nuestro enfoque principal de manera casi inmediata al comenzar el proyecto.La **calidad del agua** y su efecto es un tema del cual pensamos que se tiene poco en cuenta y que realmente genera un gran impacto social; por tanto queriamos explorar tambien sus efectos. De la misma manera, encontramos en la provincia Asturiana una gran cantidad de informacion en sus bases de datos sobre este asunto. 
 
-### **Explicación objetivo 3**;
+### **Explicación objetivo 3**
 
 Este ultimo objetivo a comparar es el que determinamos en ultima instancia, ya que en un principio estabamos interesados en las enferemedades gastrointestinales pero no encontramos informacion y la que habia se hallaba de forma caotica. Finalmente concretamos que dentro de estas enfermedades y que pueda poder relacionarse con ambos objetivos anteriores es el **cancer de colon**. Tambien encontramos suficiente informacion sobre este asunto en bases de datos Asturianas, por tanto esto nos dio otro incentivo para elegir esta enfermedad concreta.
 
-### **Explicación objetivo 4**;
+### **Explicación objetivo 4**
 
 Por último, este objetivo lo escogimos para realizar una comparacion final entre el resto de objetivos e intentar demostrar de alguna forma que tenian relacion entre ellos.
 
