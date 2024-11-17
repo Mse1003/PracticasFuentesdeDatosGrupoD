@@ -137,7 +137,7 @@ summary(fumadores_asturias_final)
 datosEnfermedades <-  read_excel("INPUT/DATA/03009d.xlsx")
 str(datosEnfermedades)
 summary(datosEnfermedades)
-View(datosEnfermedades)
+#View(datosEnfermedades)
 
 ```
 
@@ -196,7 +196,6 @@ cancer_colon <- datosEnfermedades %>%
 summary(cancer_colon)
 ```
 
-
 ```{r}
 # Cargar las librerías necesarias
 library(dplyr)
@@ -242,4 +241,49 @@ correlacion_ex_fumador <- cor(cancer_colon_promedio$Defunciones, fumadores_prome
 print(paste("Correlación entre fumadores diarios y defunciones por cáncer de colon:", correlacion_fumador_diario))
 print(paste("Correlación entre ex fumadores y defunciones por cáncer de colon:", correlacion_ex_fumador))
 
+
+```
+fumadores ejercicio 1
+```{r}
+# Extraer solo los campos necesarios del JSON
+fumadores_asturias <- datos_fumadores %>%
+  mutate(
+    Valor = map_dbl(Data, ~ if (!is.null(.x$Valor)) .x$Valor else NA_real_)
+  ) %>%
+  select(Nombre, Valor) %>%
+  filter(grepl("Asturias", Nombre))
+
+# Ver los resultados
+print(fumadores_asturias)
+
+# Filtrar datos relevantes (por ejemplo, Fumador diario, ocasional, etc.)
+fumadores_relevantes <- fumadores_asturias %>%
+  filter(
+    grepl("Fumador diario|Fumador ocasional|Ex fumador|Nunca ha fumado", Nombre)
+  )
+
+# Ver los datos filtrados
+print(fumadores_relevantes)
+
+```
+
+cancer de colon ejercicio 1
+```{r}
+# Cargar los datos de enfermedades (asegúrate de que el archivo esté correctamente cargado)
+datosEnfermedades <- read_excel("INPUT/DATA/03009d.xlsx")
+
+# Filtrar y organizar los datos relacionados con "Cáncer de colon"
+cancer_colon_final <- datosEnfermedades %>%
+  filter(grepl("Cáncer de colon|Total|Hombres|Mujeres", `...1`)) %>%  # Filtrar categorías relevantes
+  select(`...1`, Total, ENERO, FEBRERO, MARZO, ABRIL, MAYO) %>%  # Seleccionar columnas relevantes
+  rename(
+    Categoria = `...1`  # Renombrar la columna principal
+  ) %>%
+  filter(row_number() %in% (which(grepl("Cáncer de colon", Categoria))[1]:(which(grepl("Cáncer de colon", Categoria))[1] + 3))) %>%  # Seleccionar "Cáncer de colon" y las 3 filas siguientes
+  mutate(across(Total:MAYO, as.numeric))  # Convertir las columnas numéricas
+
+# Verificar el resultado final
+print(cancer_colon_final)
+
+```
 
