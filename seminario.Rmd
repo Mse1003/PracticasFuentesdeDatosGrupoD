@@ -287,12 +287,3 @@ print(cancer_colon_final)
 
 ```
 
-```{r}
-#EJERCICIO 2
-# Limpieza de datos: reemplazo de separadores y conversión
-data <- data %>%
-  mutate(across(where(is.character), ~ gsub(",", ".", .))) %>% # Cambiar "," por "."
-  mutate(across(where(is.character), as.numeric))  # Convertir caracteres numéricos
-
-```
-
