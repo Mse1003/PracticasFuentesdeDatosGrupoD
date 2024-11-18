@@ -286,4 +286,200 @@ cancer_colon_final <- datosEnfermedades %>%
 print(cancer_colon_final)
 
 ```
+relacion entre fumadores y cancer de colon 
+```{r}
+# Cargar las tablas procesadas de tabaquismo y cáncer de colon
+# Suponiendo que fumadores_asturias y cancer_colon_final ya están procesados
 
+# Procesar los datos de tabaquismo
+fumadores_asturias <- fumadores_asturias %>%
+  filter(grepl("Fumador diario|Fumador ocasional|Ex fumador|Nunca ha fumado", Nombre)) %>%  # Filtrar categorías clave
+  mutate(Grupo = case_when(
+    grepl("Hombres", Nombre) ~ "Hombres",
+    grepl("Mujeres", Nombre) ~ "Mujeres",
+    grepl("Ambos sexos", Nombre) ~ "Total",
+    TRUE ~ NA_character_
+  )) %>%  # Crear columna de grupo (Total, Hombres, Mujeres)
+  select(Grupo, Nombre, Valor)
+
+# Generar la tabla combinada
+tabla_combinada <- fumadores_asturias %>%
+  filter(Grupo %in% c("Total", "Hombres", "Mujeres")) %>%  # Filtrar grupos relevantes
+  left_join(cancer_colon_final %>% select(Categoria, Total), by = c("Grupo" = "Categoria")) %>%
+  rename(
+    PrevalenciaTabaquismo = Valor,
+    CasosCancerColonTotal = Total
+  ) %>%
+  mutate(
+    CasosCancerColonPonderados = (PrevalenciaTabaquismo / 100) * CasosCancerColonTotal  # Ponderar casos de cáncer
+  )
+
+# Verificar la tabla combinada
+print(tabla_combinada)
+
+# Análisis de correlación entre tabaquismo (fumadores diarios) y cáncer de colon
+correlacion <- tabla_combinada %>%
+  filter(grepl("Fumador diario", Nombre)) %>%  # Seleccionar solo fumadores diarios
+  summarise(Correlacion = cor(PrevalenciaTabaquismo, CasosCancerColonTotal, use = "complete.obs"))  # Calcular correlación
+
+# Verificar la correlación
+print(correlacion)
+
+```
+grafico 
+```{r}
+# Crear un gráfico de dispersión para visualizar la relación
+library(ggplot2)
+
+tabla_combinada %>%
+  ggplot(aes(x = Nombre, y = CasosCancerColonPonderados, fill = Grupo)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "Casos Ponderados de Cáncer de Colon por Categoría de Tabaquismo",
+    x = "Categoría de Tabaquismo",
+    y = "Casos Ponderados de Cáncer de Colon"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+tabla_combinada %>%
+  ggplot(aes(x = PrevalenciaTabaquismo, y = CasosCancerColonPonderados, color = Grupo)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Relación entre Prevalencia de Tabaquismo y Casos de Cáncer de Colon",
+    x = "Prevalencia de Tabaquismo (%)",
+    y = "Casos Ponderados de Cáncer de Colon"
+  ) +
+  theme_minimal()
+
+
+```
+
+ejercicio 3
+datos fumadores
+```{r}
+# Cargar los datos de tabaquismo ya procesados
+fumadores_asturias <- fumadores_asturias %>%
+  filter(grepl("Fumador diario|Fumador ocasional|Ex fumador|Nunca ha fumado", Nombre)) %>%  # Filtrar categorías clave
+  mutate(
+    Grupo = case_when(
+      grepl("Hombres", Nombre) ~ "Hombres",
+      grepl("Mujeres", Nombre) ~ "Mujeres",
+      grepl("Ambos sexos", Nombre) ~ "Total",
+      TRUE ~ NA_character_
+    ),
+    Mes = rep(c("ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", 
+                "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"), length.out = nrow(fumadores_asturias)),  # Asignar meses dinámicamente
+    Año = 2023  # Asignar el año 2023
+  ) %>%
+  select(Año, Grupo, Nombre, Valor, Mes)  # Seleccionar columnas relevantes
+
+# Verificar los datos finales
+print(fumadores_asturias)
+
+```
+datos agua
+
+```{r}
+
+#cambiar nombres del mes
+# Diccionario de mapeo entre los nombres actuales y los nombres estándar
+meses_mapeo <- c(
+  "enero" = "ENERO",
+  "febrero" = "FEBRERO",
+  "marzo" = "MARZO",
+  "abril" = "ABRIL",
+  "mayo" = "MAYO",
+  "Junio" = "JUNIO",
+  "Julio" = "JULIO",
+  "Agosto" = "AGOSTO",
+  "Septiembre" = "SEPTIEMBRE",
+  "octubre" = "OCTUBRE",
+  "Noviembre" = "NOVIEMBRE",
+  "Diciembre" = "DICIEMBRE"
+)
+
+# Cambiar los nombres de los meses en la columna `Mes` de Agua_gijon
+Agua_gijon <- Agua_gijon %>%
+  mutate(Mes = meses_mapeo[Mes])
+
+# Verificar los datos para asegurarse de que los meses han cambiado
+print(Agua_gijon$Mes)
+
+```
+
+```{r}
+# Filtrar datos del agua solo para el año 2023 y reemplazar NA por 0
+calidad_agua_2023 <- Agua_gijon %>%
+  filter(Año == 2023) %>%  # Filtrar solo el año 2023
+  mutate(across(everything(), ~ replace_na(., 0))) %>%  # Reemplazar todos los NA por 0
+  group_by(Mes) %>%        # Agrupar por cada mes
+  summarise(
+    pH_promedio = mean(pH, na.rm = TRUE),
+    turbidez_promedio = mean(Turbidez, na.rm = TRUE),
+    nitratos_promedio = mean(Nitratos, na.rm = TRUE),
+    bacterias_coliformes_promedio = mean(`Bacterías Coliformes`, na.rm = TRUE),
+    enterococos_promedio = mean(Enterococos, na.rm = TRUE),
+    trihalometanos_promedio = mean(`Trihalometanos`, na.rm = TRUE),
+    fluor_promedio = mean(Fluor, na.rm = TRUE),
+    cloruros_promedio = mean(Cloruros, na.rm = TRUE),
+    dureza_promedio = mean(Dureza, na.rm = TRUE),
+    sodio_promedio = mean(Sodio, na.rm = TRUE),
+    temperatura_promedio = mean(Temperatura, na.rm = TRUE)
+  )
+
+# Verificar los datos filtrados
+print(calidad_agua_2023)
+
+# Ordenar los meses en el orden correcto
+calidad_agua_2023 <- calidad_agua_2023 %>%
+  mutate(
+    Mes = factor(Mes, levels = c("ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", 
+                                 "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", 
+                                 "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"))
+  ) %>%
+  arrange(Mes)  # Ordenar por los niveles definidos
+
+# Verificar la tabla ordenada
+print(calidad_agua_2023)
+
+```
+relacionar tablas
+```{r}
+# Combinar las tablas de tabaquismo y calidad del agua
+tabla_combinada <- fumadores_asturias %>%
+  inner_join(calidad_agua_2023, by = "Mes")  # Unir tablas por el Mes común
+
+# Verificar la tabla combinada
+print(tabla_combinada)
+
+```
+corelacion entre los datos
+```{r}
+
+rm(tabla_completa)
+# Reemplazar NA por 0 en las columnas seleccionadas
+tabla_completa <- tabla_combinada %>%
+  mutate(across(
+    c(pH_promedio, nitratos_promedio, bacterias_coliformes_promedio, 
+      enterococos_promedio, trihalometanos_promedio, fluor_promedio),
+    ~ replace_na(., 0)  # Reemplazar NA por 0
+  ))
+
+# Calcular correlaciones después del reemplazo
+correlaciones <- tabla_completa %>%
+  summarise(
+    pH = cor(Valor, pH_promedio),
+    Nitratos = cor(Valor, nitratos_promedio),
+    BacteriasColiformes = cor(Valor, bacterias_coliformes_promedio),
+    Enterococos = cor(Valor, enterococos_promedio),
+    Trihalometanos = cor(Valor, trihalometanos_promedio),
+    Fluor = cor(Valor, fluor_promedio)
+  )
+
+# Ver las correlaciones calculadas
+print(correlaciones)
+
+```
