@@ -85,9 +85,8 @@ Por último, este objetivo lo escogimos para realizar una comparacion final entr
 | **Información**         | **Links**                                                                                   |
 |:------------------------|:--------------------------------------------------------------------------------------------|
 | calidad agua                          | [CSV](https://)                |
-| fumadores                          | [CSV](https://)                   |
-| cancer colon                         | [CSV](https://) |
-|                           | [CSV](https://)               |
+| fumadores                          | [JSON](https://)                   |
+| cancer colon                         | [XML](https://) |
 
 ### Conclusion
 
