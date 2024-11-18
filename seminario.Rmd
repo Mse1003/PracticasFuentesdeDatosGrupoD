@@ -411,29 +411,19 @@ print(Agua_gijon$Mes)
 ```
 
 ```{r}
-# Filtrar datos del agua solo para el año 2023 y reemplazar NA por 0
-calidad_agua_2023 <- Agua_gijon %>%
-  filter(Año == 2023) %>%  # Filtrar solo el año 2023
-  mutate(across(everything(), ~ replace_na(., 0))) %>%  # Reemplazar todos los NA por 0
-  group_by(Mes) %>%        # Agrupar por cada mes
-  summarise(
-    pH_promedio = mean(pH, na.rm = TRUE),
-    turbidez_promedio = mean(Turbidez, na.rm = TRUE),
-    nitratos_promedio = mean(Nitratos, na.rm = TRUE),
-    bacterias_coliformes_promedio = mean(`Bacterías Coliformes`, na.rm = TRUE),
-    enterococos_promedio = mean(Enterococos, na.rm = TRUE),
-    trihalometanos_promedio = mean(`Trihalometanos`, na.rm = TRUE),
-    fluor_promedio = mean(Fluor, na.rm = TRUE),
-    cloruros_promedio = mean(Cloruros, na.rm = TRUE),
-    dureza_promedio = mean(Dureza, na.rm = TRUE),
-    sodio_promedio = mean(Sodio, na.rm = TRUE),
-    temperatura_promedio = mean(Temperatura, na.rm = TRUE)
-  )
+# Filtrar solo datos del año 2023
+datos_2023 <- Agua_gijon %>%
+  filter(Año == 2023) %>%  # Mantener solo el año 2023
+  mutate(across(where(is.character), ~ as.character(.))) %>%  # Asegurar que `Mes` sea de tipo caracter
+  mutate(across(where(is.numeric), ~ replace_na(., 0))) %>%  # Reemplazar NA por 0 solo en columnas numéricas
+  select(Mes, where(is.numeric))  # Mantener la columna `Mes` y las columnas numéricas
 
-# Verificar los datos filtrados
-print(calidad_agua_2023)
+# Agrupar por mes y calcular promedios
+calidad_agua_2023 <- datos_2023 %>%
+  group_by(Mes) %>%
+  summarise(across(where(is.numeric), mean, na.rm = TRUE))
 
-# Ordenar los meses en el orden correcto
+# Ordenar los meses
 calidad_agua_2023 <- calidad_agua_2023 %>%
   mutate(
     Mes = factor(Mes, levels = c("ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", 
@@ -446,6 +436,7 @@ calidad_agua_2023 <- calidad_agua_2023 %>%
 print(calidad_agua_2023)
 
 ```
+
 relacionar tablas
 ```{r}
 # Combinar las tablas de tabaquismo y calidad del agua
@@ -458,28 +449,89 @@ print(tabla_combinada)
 ```
 corelacion entre los datos
 ```{r}
+# Calcular correlaciones entre todas las variables cuantitativas de la tabla combinada
+correlaciones <- tabla_combinada %>%
+  select(where(is.numeric)) %>%  # Seleccionar solo columnas numéricas
+  summarise(across(everything(), ~ cor(Valor, ., use = "complete.obs")))  # Calcular correlación con la columna "Valor"
 
-rm(tabla_completa)
-# Reemplazar NA por 0 en las columnas seleccionadas
-tabla_completa <- tabla_combinada %>%
-  mutate(across(
-    c(pH_promedio, nitratos_promedio, bacterias_coliformes_promedio, 
-      enterococos_promedio, trihalometanos_promedio, fluor_promedio),
-    ~ replace_na(., 0)  # Reemplazar NA por 0
-  ))
-
-# Calcular correlaciones después del reemplazo
-correlaciones <- tabla_completa %>%
-  summarise(
-    pH = cor(Valor, pH_promedio),
-    Nitratos = cor(Valor, nitratos_promedio),
-    BacteriasColiformes = cor(Valor, bacterias_coliformes_promedio),
-    Enterococos = cor(Valor, enterococos_promedio),
-    Trihalometanos = cor(Valor, trihalometanos_promedio),
-    Fluor = cor(Valor, fluor_promedio)
-  )
-
-# Ver las correlaciones calculadas
+# Verificar las correlaciones calculadas
 print(correlaciones)
 
+
+
 ```
+
+grafica con los resultados obtenidos
+
+```{r}
+install.packages("reshape2")
+library(reshape2)
+
+```
+
+```{r}
+# Convertir la tabla de calidad del agua a formato largo
+calidad_agua_long <- calidad_agua_2023 %>%
+  pivot_longer(cols = -Mes, names_to = "Variable", values_to = "Valor")
+
+# Filtrar para eliminar la variable "Año"
+calidad_agua_long_filtrado <- calidad_agua_long %>%
+  filter(Variable != "Año")
+
+# Crear el gráfico de barras sin incluir "Año"
+ggplot(calidad_agua_long_filtrado, aes(x = Mes, y = Valor, fill = Variable)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "Niveles promedio de calidad del agua por mes",
+    x = "Mes",
+    y = "Valor promedio",
+    fill = "Variable"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r}
+# Convertir la tabla de calidad del agua a formato largo
+calidad_agua_long <- calidad_agua_2023 %>%
+  pivot_longer(cols = -Mes, names_to = "Variable", values_to = "Valor")
+
+# Filtrar para eliminar la variable "Año"
+calidad_agua_long_filtrado <- calidad_agua_long %>%
+  filter(Variable != "Año")
+
+# Crear el mapa de color
+ggplot(calidad_agua_long_filtrado, aes(x = Mes, y = Variable, fill = Valor)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(low = "blue", high = "red", na.value = "grey90") +
+  labs(
+    title = "Mapa de color de los niveles de calidad del agua por mes",
+    x = "Mes",
+    y = "Variable",
+    fill = "Valor"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 10)
+  )
+
+```
+
+```{r}
+library(ggplot2)
+
+# Crear el gráfico con la columna correcta
+ggplot(tabla_combinada, aes(x = Valor, y = Nitratos)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(
+    title = "Relación entre el tabaquismo y nitratos en agua",
+    x = "Nivel de Tabaquismo (Valor)",
+    y = "Niveles de Nitratos"
+  ) +
+  theme_minimal()
+
+```
+
