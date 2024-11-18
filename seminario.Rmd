@@ -546,15 +546,43 @@ ggplot(tabla_combinada, aes(x = Valor, y = Nitratos)) +
 
 ```
 
-# **Bibliografia**
+```{r}
+#Ejercicio 2
+library(readr)
 
-A continuacion agregamos los enlaces de interes desde donde hemos obtenido tanto las bases de datos para obtener la informacion necesaria para nuestro trabajo como el resto de elementos utilizados en el proyecto(imagenes, emoticonos,informacion extra, ia ...):
+Agua_gijon_ej2 <- read_delim("INPUT/DATA/731.csv", 
+                             delim = ",", 
+                             escape_double = FALSE, 
+                             trim_ws = TRUE, 
+                             show_col_types = FALSE)
+mutate(Mes = toupper(Mes))
+#View(Agua_gijon_ej2)
+library(dplyr)
 
-**Imagen**:
-**Emoticonos**:
-**base de datos de fumadores**:
-**base de datos cancer de colon**:
-**base de datos calidad agua**:
-**base de datos no usada**:
+# Filtrar solo datos del año 2023
+datos_2023 <- Agua_gijon %>%
+  filter(Año == 2023) %>%  # Mantener solo el año 2023
+  mutate(across(where(is.character), ~ as.character(.))) %>%  # Asegurar que `Mes` sea de tipo caracter
+  mutate(across(where(is.numeric), ~ replace_na(., 0))) %>%  # Reemplazar NA por 0 solo en columnas numéricas
+  select(Mes, where(is.numeric))  # Mantener la columna `Mes` y las columnas numéricas
 
+# Agrupar por mes y calcular promedios
+calidad_agua_2023 <- datos_2023 %>%
+  group_by(Mes) %>%
+  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+
+# Ordenar los meses
+calidad_agua_2023 <- calidad_agua_2023 %>%
+  mutate(
+    Mes = factor(Mes, levels = c("ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", 
+                                 "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", 
+                                 "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"))
+  ) %>%
+  arrange(Mes)  # Ordenar por los niveles definidos
+
+# Verificar la tabla ordenada
+print(calidad_agua_2023)
+
+
+```
 
