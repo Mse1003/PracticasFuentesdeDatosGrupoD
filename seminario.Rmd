@@ -387,6 +387,17 @@ print(fumadores_asturias)
 ```
 datos agua
 
+convertir todos los meses en mayuscula
+```{r}
+# Convertir los nombres de los meses a mayúsculas
+Agua_gijon <- Agua_gijon %>%
+  mutate(Mes = toupper(Mes))
+
+# Verificar los datos para asegurarse de que los meses están en mayúsculas
+print(Agua_gijon$Mes)
+
+```
+en teoria esta celda no es necesaria pero no borrar
 ```{r}
 
 #cambiar nombres del mes
