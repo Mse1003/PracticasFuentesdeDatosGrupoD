@@ -359,7 +359,11 @@ tabla_combinada %>%
 
 ```{r}
 #sjhsdhl
+<<<<<<< HEAD
 #chao
+=======
+#hola
+>>>>>>> b513a57d3edc21dea2b94e76311f27cc14be7676
 #nskjdkasjn
 
 ```
