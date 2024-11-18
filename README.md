@@ -7,7 +7,9 @@
 > **ALVARO MARTIN** ([amr1031\@alu.ubu.es](mailto:amr1031@alu.ubu.es))[📩](https://emojipedia.org/shortcodes)
 > - 3º INGENERIA DE LA SALUD / [Fuentes de datos biomédicas y webs semanticas GIS.](https://ubuvirtual.ubu.es/course/view.php?id=14468)[🎓](https://emojipedia.org/shortcodes)
 
- <img src='INPUT/IMAGENES/escudoUBU.jpeg' align="right" height="120" />
+ <img src='INPUT/IMAGENES/escudoUBU.jpeg' align="right" height="200" />
+
+
 
 ## Índice
 
