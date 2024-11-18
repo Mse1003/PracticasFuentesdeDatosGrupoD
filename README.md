@@ -1,14 +1,12 @@
-# IMPACTO DEL AGUA Y EL TABAQUISMO SOBRE EL CANCER DE COLON
+# IMPACTO DEL AGUA Y EL TABAQUISMO SOBRE EL CANCER DE COLON 
+<img src='INPUT/IMAGENES/escudoUBU.jpeg' align="right" height="120" />
 
 > Trabajo realizado por;
 >
 > **MIGUEL SORIANO** ([mse1003\@alu.ubu.es](mailto:mse1003@alu.ubu.es))[📩](https://emojipedia.org/shortcodes),
 > **ANDRES ARRIBAS** ([aaa1041\@alu.ubu.es](mailto:aaa1041@alu.ubu.es))[📩](https://emojipedia.org/shortcodes),
 > **ALVARO MARTIN** ([amr1031\@alu.ubu.es](mailto:amr1031@alu.ubu.es))[📩](https://emojipedia.org/shortcodes)
-> - 3º INGENERIA DE LA SALUD / [Fuentes de datos biomédicas y webs semanticas GIS.](https://ubuvirtual.ubu.es/course/view.php?id=14468)[🎓](https://emojipedia.org/shortcodes) <img src='INPUT/IMAGENES/escudoUBU.jpeg' align="right" height="120" />
-
-
-
+> - 3º INGENERIA DE LA SALUD / [Fuentes de datos biomédicas y webs semanticas GIS.](https://ubuvirtual.ubu.es/course/view.php?id=14468)[🎓](https://emojipedia.org/shortcodes) 
 
 ## Índice
 
