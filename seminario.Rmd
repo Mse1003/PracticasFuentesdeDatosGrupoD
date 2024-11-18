@@ -357,6 +357,11 @@ tabla_combinada %>%
 
 ```
 
+```{r}
+#sjhsdhl
+
+```
+
 ejercicio 3
 datos fumadores
 ```{r}
