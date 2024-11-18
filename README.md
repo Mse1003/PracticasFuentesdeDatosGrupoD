@@ -80,14 +80,15 @@ Por último, este objetivo lo escogimos para realizar una comparacion final entr
 
 ## Bibliografía [📰](https://emojipedia.org/shortcodes)
 
--   A continuacion, adjuntamos un listado de enlaces de interes que hemos usado para fundamentar nuestro proyecto.
+-   A continuacion, adjuntamos un listado de enlaces de interes que hemos usado para fundamentar nuestro proyecto:
 
-| **Información**         | **Links**                                                                                   |
-|:------------------------|:--------------------------------------------------------------------------------------------|
-|                           | [CSV](https://)                |
-|                           | [CSV](https://)                   |
-|                           | [CSV](https://) |
-|                           | [CSV](https://)               |
+
+| **Información**  | **Links**                                                             | |                  |                                                                       |
+|:-----------------|:----------------------------------------------------------------------|
+| Fumadores        | [JSon](https://)                                                      |
+| Cancer de colon  | [Xml](https://)                                                       |
+| Calidad del agua | [CSV](https://datos.gob.es/es/catalogo/l01330241-calidad-del-agua-de-consumo-humano)                                                                              |
+
 
 ### Conclusion
 

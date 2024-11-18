@@ -546,3 +546,15 @@ ggplot(tabla_combinada, aes(x = Valor, y = Nitratos)) +
 
 ```
 
+# **Bibliografia**
+
+A continuacion agregamos los enlaces de interes desde donde hemos obtenido tanto las bases de datos para obtener la informacion necesaria para nuestro trabajo como el resto de elementos utilizados en el proyecto(imagenes, emoticonos,informacion extra, ia ...):
+
+**Imagen**:
+**Emoticonos**:
+**base de datos de fumadores**:
+**base de datos cancer de colon**:
+**base de datos calidad agua**:
+**base de datos no usada**:
+
+
