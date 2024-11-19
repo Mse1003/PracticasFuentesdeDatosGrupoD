@@ -549,39 +549,38 @@ ggplot(tabla_combinada, aes(x = Valor, y = Nitratos)) +
 ```{r}
 #Ejercicio 2
 library(readr)
+library(dplyr)
 
+# Cargar datos desde tu archivo CSV
 Agua_gijon_ej2 <- read_delim("INPUT/DATA/731.csv", 
                              delim = ",", 
                              escape_double = FALSE, 
                              trim_ws = TRUE, 
                              show_col_types = FALSE)
-mutate(Mes = toupper(Mes))
-#View(Agua_gijon_ej2)
-library(dplyr)
 
-# Filtrar solo datos del año 2023
-datos_2023 <- Agua_gijon %>%
-  filter(Año == 2023) %>%  # Mantener solo el año 2023
-  mutate(across(where(is.character), ~ as.character(.))) %>%  # Asegurar que `Mes` sea de tipo caracter
-  mutate(across(where(is.numeric), ~ replace_na(., 0))) %>%  # Reemplazar NA por 0 solo en columnas numéricas
-  select(Mes, where(is.numeric))  # Mantener la columna `Mes` y las columnas numéricas
+# Asegurarse de que los nombres de los meses estén en mayúsculas
+Agua_gijon_ej2 <- Agua_gijon_ej2 %>%
+  mutate(Mes = toupper(Mes))
 
-# Agrupar por mes y calcular promedios
-calidad_agua_2023 <- datos_2023 %>%
+# Filtrar datos para el año 2020 y los meses de enero a mayo
+datos_2020 <- Agua_gijon_ej2 %>%
+  filter(Año == 2020, Mes %in% c("ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO"))
+
+# Agrupar por Mes y calcular el promedio de las columnas numéricas
+calidad_agua_2020 <- datos_2020 %>%
   group_by(Mes) %>%
   summarise(across(where(is.numeric), mean, na.rm = TRUE))
 
 # Ordenar los meses
-calidad_agua_2023 <- calidad_agua_2023 %>%
+calidad_agua_2020 <- calidad_agua_2020 %>%
   mutate(
-    Mes = factor(Mes, levels = c("ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", 
-                                 "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", 
-                                 "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"))
+    Mes = factor(Mes, levels = c("ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO"))
   ) %>%
-  arrange(Mes)  # Ordenar por los niveles definidos
+  arrange(Mes)
 
-# Verificar la tabla ordenada
-print(calidad_agua_2023)
+# Verificar el resultado
+print(calidad_agua_2020)
+
 
 
 ```
