@@ -550,10 +550,11 @@ ggplot(tabla_combinada, aes(x = Valor, y = Nitratos)) +
 #Ejercicio 2
 library(readr)
 library(dplyr)
+library(tidyr)
 
 # Cargar datos desde tu archivo CSV
-Agua_gijon_ej2 <- read_delim("INPUT/DATA/731.csv", 
-                             delim = ",", 
+Agua_gijon_ej2 <- read_delim("INPUT/DATA/123.csv", 
+                             delim = ";", 
                              escape_double = FALSE, 
                              trim_ws = TRUE, 
                              show_col_types = FALSE)
@@ -567,19 +568,144 @@ datos_2020 <- Agua_gijon_ej2 %>%
   filter(Año == 2020, Mes %in% c("ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO"))
 
 # Agrupar por Mes y calcular el promedio de las columnas numéricas
-calidad_agua_2020 <- datos_2020 %>%
-  group_by(Mes) %>%
-  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+#calidad_agua_2020 <- datos_2020 %>%
+#  group_by(Mes) %>%
+#  summarise(across(where(is.numeric), mean, na.rm = TRUE))
 
 # Ordenar los meses
-calidad_agua_2020 <- calidad_agua_2020 %>%
+datos_2020 <- datos_2020 %>%
   mutate(
     Mes = factor(Mes, levels = c("ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO"))
   ) %>%
   arrange(Mes)
 
 # Verificar el resultado
-print(calidad_agua_2020)
+print(datos_2020)
+
+
+
+# Clasificación de la calidad para todos los parámetros
+data_clean <- datos_2020 %>%
+  mutate(
+    Calidad_pH = case_when(
+      pH >= 6.5 & pH <= 8.5 ~ "Buena",
+      pH < 6.5 ~ "Ácida",
+      pH > 8.5 ~ "Alcalina",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Turbidez = case_when(
+      Turbidez <= 1 ~ "Óptima",
+      Turbidez > 1 & Turbidez <= 5 ~ "Aceptable",
+      Turbidez > 5 ~ "Mala",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Cloro = case_when(
+      `Cloro Libre` <= 0.5 ~ "Aceptable",
+      `Cloro Libre` > 0.5 & `Cloro Libre` <= 1.5 ~ "Moderada",
+      `Cloro Libre` > 1.5 ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Color = case_when(
+      `Color Max: 15 Ud: pl/mg` <= 15 ~ "Aceptable",
+      `Color Max: 15 Ud: pl/mg` > 15 ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Olor = case_when(
+      Olor == 0 ~ "Sin Olor",
+      Olor > 0 ~ "Detectable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Sabor = case_when(
+      Sabor == 0 ~ "Sin Sabor",
+      Sabor > 0 ~ "Detectable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Temperatura = case_when(
+      Temperatura <= 25 ~ "Aceptable",
+      Temperatura > 25 ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Cloruros = case_when(
+      Cloruros <= 250 ~ "Aceptable",
+      Cloruros > 250 ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Fluor = case_when(
+      Fluor <= 1.5 ~ "Aceptable",
+      Fluor > 1.5 ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Sodio = case_when(
+      Sodio <= 200 ~ "Aceptable",
+      Sodio > 200 ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Aluminio = case_when(
+      Aluminio <= 0.2 ~ "Aceptable",
+      Aluminio > 0.2 ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Trihalometanos = case_when(
+      Trihalometanos <= 100 ~ "Aceptable",
+      Trihalometanos > 100 ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Oxidabilidad = case_when(
+      Oxidabilidad <= 5 ~ "Aceptable",
+      Oxidabilidad > 5 ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Germenes22C = case_when(
+      `Gérmenes Totales a 22ºC` <= 100 ~ "Aceptable",
+      `Gérmenes Totales a 22ºC` > 100 ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Clostridium = case_when(
+      `Clostridium perfringens` == 0 ~ "Aceptable",
+      `Clostridium perfringens` > 0 ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Calcio = case_when(
+      Calcio <= 100 ~ "Bajo",
+      Calcio > 100 & Calcio <= 300 ~ "Moderado",
+      Calcio > 300 ~ "Alto",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Magnesio = case_when(
+      Magnesio <= 30 ~ "Bajo",
+      Magnesio > 30 & Magnesio <= 50 ~ "Moderado",
+      Magnesio > 50 ~ "Alto",
+      TRUE ~ "Desconocida"
+    )
+  )
+
+# Crear un resumen general de calidad
+resumen_calidad <- data_clean %>%
+  summarise(
+    pH_Bueno = sum(Calidad_pH == "Buena", na.rm = TRUE),
+    Turbidez_Optima = sum(Calidad_Turbidez == "Óptima", na.rm = TRUE),
+    Color_Aceptable = sum(Calidad_Color == "Aceptable", na.rm = TRUE),
+    Cloro_Aceptable = sum(Calidad_Cloro == "Aceptable", na.rm = TRUE),
+    Olor_Sin = sum(Calidad_Olor == "Sin Olor", na.rm = TRUE),
+    Sabor_Sin = sum(Calidad_Sabor == "Sin Sabor", na.rm = TRUE),
+    Temperatura_Aceptable = sum(Calidad_Temperatura == "Aceptable", na.rm = TRUE),
+    Cloruros_Aceptables = sum(Calidad_Cloruros == "Aceptable", na.rm = TRUE),
+    Fluor_Aceptable = sum(Calidad_Fluor == "Aceptable", na.rm = TRUE),
+    Sodio_Aceptable = sum(Calidad_Sodio == "Aceptable", na.rm = TRUE),
+    Aluminio_Aceptable = sum(Calidad_Aluminio == "Aceptable", na.rm = TRUE),
+    Trihalometanos_Aceptables = sum(Calidad_Trihalometanos == "Aceptable", na.rm = TRUE),
+    Oxidabilidad_Aceptable = sum(Calidad_Oxidabilidad == "Aceptable", na.rm = TRUE),
+    Germenes_Aceptables = sum(Calidad_Germenes22C == "Aceptable", na.rm = TRUE),
+    Clostridium_Aceptables = sum(Calidad_Clostridium == "Aceptable", na.rm = TRUE),
+    Calcio_Bajo = sum(Calidad_Calcio == "Bajo", na.rm = TRUE),
+    Magnesio_Bajo = sum(Calidad_Magnesio == "Bajo", na.rm = TRUE)
+  )
+
+# Visualizar el resumen
+print(resumen_calidad)
+
+# Guardar los datos limpios y clasificados
+#write_csv(data_clean, "agua_calidad_clasificada_completa.csv")
 
 
 
