@@ -606,18 +606,18 @@ data_clean <- datos_2020 %>%
       TRUE ~ "Desconocida"
     ),
     Calidad_Color = case_when(
-      `Color Max: 15 Ud: pl/mg` <= 15 ~ "Aceptable",
-      `Color Max: 15 Ud: pl/mg` > 15 ~ "No Aceptable",
+      as.numeric(`Color Max: 15 Ud: pl/mg`) <= 15 ~ "Aceptable",
+      as.numeric(`Color Max: 15 Ud: pl/mg`) > 15 ~ "No Aceptable",
       TRUE ~ "Desconocida"
     ),
     Calidad_Olor = case_when(
-      Olor == 0 ~ "Sin Olor",
-      Olor > 0 ~ "Detectable",
+      Olor == 0 ~ "No aceptable",
+      Olor > 0 ~ "Buen estado",
       TRUE ~ "Desconocida"
     ),
     Calidad_Sabor = case_when(
-      Sabor == 0 ~ "Sin Sabor",
-      Sabor > 0 ~ "Detectable",
+      Sabor == 0 ~ "No recomendable",
+      Sabor > 0 ~ "Recomendable",
       TRUE ~ "Desconocida"
     ),
     Calidad_Temperatura = case_when(
@@ -686,8 +686,8 @@ resumen_calidad <- data_clean %>%
     Turbidez_Optima = sum(Calidad_Turbidez == "Óptima", na.rm = TRUE),
     Color_Aceptable = sum(Calidad_Color == "Aceptable", na.rm = TRUE),
     Cloro_Aceptable = sum(Calidad_Cloro == "Aceptable", na.rm = TRUE),
-    Olor_Sin = sum(Calidad_Olor == "Sin Olor", na.rm = TRUE),
-    Sabor_Sin = sum(Calidad_Sabor == "Sin Sabor", na.rm = TRUE),
+    Olor_aceptable = sum(Calidad_Olor == "Buen estado", na.rm = TRUE),
+    Sabor_aceptable = sum(Calidad_Sabor == "Recomendable", na.rm = TRUE),
     Temperatura_Aceptable = sum(Calidad_Temperatura == "Aceptable", na.rm = TRUE),
     Cloruros_Aceptables = sum(Calidad_Cloruros == "Aceptable", na.rm = TRUE),
     Fluor_Aceptable = sum(Calidad_Fluor == "Aceptable", na.rm = TRUE),
@@ -707,7 +707,44 @@ print(resumen_calidad)
 # Guardar los datos limpios y clasificados
 #write_csv(data_clean, "agua_calidad_clasificada_completa.csv")
 
+# Crear un resumen de calidad por mes con columna "Aceptable/No Aceptable"
+resumen_por_mes <- data_clean %>%
+  group_by(Mes) %>%
+  summarise(
+    Calidad_pH = as.integer(any(Calidad_pH == "Buena", na.rm = TRUE)),
+    Calidad_Turbidez = as.integer(any(Calidad_Turbidez == "Óptima", na.rm = TRUE)),
+    Calidad_Cloro = as.integer(any(Calidad_Cloro == "Aceptable", na.rm = TRUE)),
+    Calidad_Color = as.integer(any(Calidad_Color == "Aceptable", na.rm = TRUE)),
+    Calidad_Olor = as.integer(any(Calidad_Olor == "Buen estado", na.rm = TRUE)),
+    Calidad_Sabor = as.integer(any(Calidad_Sabor == "Recomendable", na.rm = TRUE)),
+    Calidad_Temperatura = as.integer(any(Calidad_Temperatura == "Aceptable", na.rm = TRUE)),
+    Calidad_Cloruros = as.integer(any(Calidad_Cloruros == "Aceptable", na.rm = TRUE)),
+    Calidad_Fluor = as.integer(any(Calidad_Fluor == "Aceptable", na.rm = TRUE)),
+    Calidad_Sodio = as.integer(any(Calidad_Sodio == "Aceptable", na.rm = TRUE)),
+    Calidad_Aluminio = as.integer(any(Calidad_Aluminio == "Aceptable", na.rm = TRUE)),
+    Calidad_Trihalometanos = as.integer(any(Calidad_Trihalometanos == "Aceptable", na.rm = TRUE)),
+    Calidad_Oxidabilidad = as.integer(any(Calidad_Oxidabilidad == "Aceptable", na.rm = TRUE)),
+    Calidad_Germenes22C = as.integer(any(Calidad_Germenes22C == "Aceptable", na.rm = TRUE)),
+    Calidad_Clostridium = as.integer(any(Calidad_Clostridium == "Aceptable", na.rm = TRUE)),
+    Calidad_Calcio = as.integer(any(Calidad_Calcio == "Bajo", na.rm = TRUE)),
+    Calidad_Magnesio = as.integer(any(Calidad_Magnesio == "Bajo", na.rm = TRUE))
+  ) %>%
+  mutate(
+    Aceptable = if_else(
+      Calidad_pH == 1 & Calidad_Turbidez == 1 & Calidad_Cloro == 1 & Calidad_Color == 1 &
+      Calidad_Olor == 1 & Calidad_Sabor == 1 & Calidad_Temperatura == 1 & Calidad_Cloruros == 1 &
+      Calidad_Fluor == 1 & Calidad_Sodio == 1 & Calidad_Aluminio == 1 & Calidad_Trihalometanos == 1 &
+      Calidad_Oxidabilidad == 1 & Calidad_Germenes22C == 1 & Calidad_Clostridium == 1 &
+      Calidad_Calcio == 1 & Calidad_Magnesio == 1,
+      "Aceptable", 
+      "No Aceptable"
+    )
+  ) %>%
+  arrange(Mes)
 
-
+# Visualizar el resumen por mes
+print(resumen_por_mes)
 ```
+
+
 
