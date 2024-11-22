@@ -552,12 +552,14 @@ library(readr)
 library(dplyr)
 library(tidyr)
 
-# Cargar datos desde tu archivo CSV
+# Cargar datos con configuración regional adecuada
 Agua_gijon_ej2 <- read_delim("INPUT/DATA/123.csv", 
                              delim = ";", 
+                             locale = locale(decimal_mark = ","),  # Coma como separador decimal
                              escape_double = FALSE, 
                              trim_ws = TRUE, 
                              show_col_types = FALSE)
+
 
 # Asegurarse de que los nombres de los meses estén en mayúsculas
 Agua_gijon_ej2 <- Agua_gijon_ej2 %>%
@@ -678,34 +680,6 @@ data_clean <- datos_2020 %>%
       TRUE ~ "Desconocida"
     )
   )
-
-# Crear un resumen general de calidad
-resumen_calidad <- data_clean %>%
-  summarise(
-    pH_Bueno = sum(Calidad_pH == "Buena", na.rm = TRUE),
-    Turbidez_Optima = sum(Calidad_Turbidez == "Óptima", na.rm = TRUE),
-    Color_Aceptable = sum(Calidad_Color == "Aceptable", na.rm = TRUE),
-    Cloro_Aceptable = sum(Calidad_Cloro == "Aceptable", na.rm = TRUE),
-    Olor_aceptable = sum(Calidad_Olor == "Buen estado", na.rm = TRUE),
-    Sabor_aceptable = sum(Calidad_Sabor == "Recomendable", na.rm = TRUE),
-    Temperatura_Aceptable = sum(Calidad_Temperatura == "Aceptable", na.rm = TRUE),
-    Cloruros_Aceptables = sum(Calidad_Cloruros == "Aceptable", na.rm = TRUE),
-    Fluor_Aceptable = sum(Calidad_Fluor == "Aceptable", na.rm = TRUE),
-    Sodio_Aceptable = sum(Calidad_Sodio == "Aceptable", na.rm = TRUE),
-    Aluminio_Aceptable = sum(Calidad_Aluminio == "Aceptable", na.rm = TRUE),
-    Trihalometanos_Aceptables = sum(Calidad_Trihalometanos == "Aceptable", na.rm = TRUE),
-    Oxidabilidad_Aceptable = sum(Calidad_Oxidabilidad == "Aceptable", na.rm = TRUE),
-    Germenes_Aceptables = sum(Calidad_Germenes22C == "Aceptable", na.rm = TRUE),
-    Clostridium_Aceptables = sum(Calidad_Clostridium == "Aceptable", na.rm = TRUE),
-    Calcio_Bajo = sum(Calidad_Calcio == "Bajo", na.rm = TRUE),
-    Magnesio_Bajo = sum(Calidad_Magnesio == "Bajo", na.rm = TRUE)
-  )
-
-# Visualizar el resumen
-print(resumen_calidad)
-
-# Guardar los datos limpios y clasificados
-#write_csv(data_clean, "agua_calidad_clasificada_completa.csv")
 
 # Crear un resumen de calidad por mes con columna "Aceptable/No Aceptable"
 resumen_por_mes <- data_clean %>%
