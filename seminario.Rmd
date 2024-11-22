@@ -552,7 +552,7 @@ library(readr)
 library(dplyr)
 library(tidyr)
 
-# Cargar datos con configuración regional adecuada
+# Cargar datos de calidad del agua, añadiendo la coma por decimales para los errores.
 Agua_gijon_ej2 <- read_delim("INPUT/DATA/123.csv", 
                              delim = ";", 
                              locale = locale(decimal_mark = ","),  # Coma como separador decimal
@@ -569,11 +569,6 @@ Agua_gijon_ej2 <- Agua_gijon_ej2 %>%
 datos_2020 <- Agua_gijon_ej2 %>%
   filter(Año == 2020, Mes %in% c("ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO"))
 
-# Agrupar por Mes y calcular el promedio de las columnas numéricas
-#calidad_agua_2020 <- datos_2020 %>%
-#  group_by(Mes) %>%
-#  summarise(across(where(is.numeric), mean, na.rm = TRUE))
-
 # Ordenar los meses
 datos_2020 <- datos_2020 %>%
   mutate(
@@ -581,40 +576,36 @@ datos_2020 <- datos_2020 %>%
   ) %>%
   arrange(Mes)
 
-# Verificar el resultado
-print(datos_2020)
-
-
-
-# Clasificación de la calidad para todos los parámetros
+# Clasificación de la calidad para todos los parámetros del agua la mayoria segun la OMS
 data_clean <- datos_2020 %>%
   mutate(
     Calidad_pH = case_when(
-      pH >= 6.5 & pH <= 8.5 ~ "Buena",
+      pH >= 6.5 & pH <= 8.5 ~ "Recomendable",
       pH < 6.5 ~ "Ácida",
       pH > 8.5 ~ "Alcalina",
       TRUE ~ "Desconocida"
     ),
     Calidad_Turbidez = case_when(
-      Turbidez <= 1 ~ "Óptima",
+      Turbidez <= 1 ~ "Recomendable",
       Turbidez > 1 & Turbidez <= 5 ~ "Aceptable",
       Turbidez > 5 ~ "Mala",
       TRUE ~ "Desconocida"
     ),
     Calidad_Cloro = case_when(
-      `Cloro Libre` <= 0.5 ~ "Aceptable",
+      `Cloro Libre` <= 0.5 ~ "Recomendable",
       `Cloro Libre` > 0.5 & `Cloro Libre` <= 1.5 ~ "Moderada",
-      `Cloro Libre` > 1.5 ~ "Alta",
+      `Cloro Libre` > 1.5 & `Cloro Libre` <= 4.0 ~ "Alta",
+      `Cloro Libre` > 4.0 ~ "Excesiva",
       TRUE ~ "Desconocida"
     ),
     Calidad_Color = case_when(
-      as.numeric(`Color Max: 15 Ud: pl/mg`) <= 15 ~ "Aceptable",
+      as.numeric(`Color Max: 15 Ud: pl/mg`) <= 15 ~ "Recomendable",
       as.numeric(`Color Max: 15 Ud: pl/mg`) > 15 ~ "No Aceptable",
       TRUE ~ "Desconocida"
     ),
     Calidad_Olor = case_when(
       Olor == 0 ~ "No aceptable",
-      Olor > 0 ~ "Buen estado",
+      Olor > 0 ~ "Recomendable",
       TRUE ~ "Desconocida"
     ),
     Calidad_Sabor = case_when(
@@ -623,47 +614,47 @@ data_clean <- datos_2020 %>%
       TRUE ~ "Desconocida"
     ),
     Calidad_Temperatura = case_when(
-      Temperatura <= 25 ~ "Aceptable",
+      Temperatura <= 25 ~ "Recomendable",
       Temperatura > 25 ~ "No Aceptable",
       TRUE ~ "Desconocida"
     ),
     Calidad_Cloruros = case_when(
-      Cloruros <= 250 ~ "Aceptable",
+      Cloruros <= 250 ~ "Recomendable",
       Cloruros > 250 ~ "Alta",
       TRUE ~ "Desconocida"
     ),
     Calidad_Fluor = case_when(
-      Fluor <= 1.5 ~ "Aceptable",
+      Fluor <= 1.5 ~ "Recomendable",
       Fluor > 1.5 ~ "No Aceptable",
       TRUE ~ "Desconocida"
     ),
     Calidad_Sodio = case_when(
-      Sodio <= 200 ~ "Aceptable",
+      Sodio <= 200 ~ "Recomendable",
       Sodio > 200 ~ "Alta",
       TRUE ~ "Desconocida"
     ),
     Calidad_Aluminio = case_when(
-      Aluminio <= 0.2 ~ "Aceptable",
+      Aluminio <= 0.2 ~ "Recomendable",
       Aluminio > 0.2 ~ "Alta",
       TRUE ~ "Desconocida"
     ),
     Calidad_Trihalometanos = case_when(
-      Trihalometanos <= 100 ~ "Aceptable",
+      Trihalometanos <= 100 ~ "Recomendable",
       Trihalometanos > 100 ~ "Alta",
       TRUE ~ "Desconocida"
     ),
     Calidad_Oxidabilidad = case_when(
-      Oxidabilidad <= 5 ~ "Aceptable",
+      Oxidabilidad <= 5 ~ "Recomendable",
       Oxidabilidad > 5 ~ "Alta",
       TRUE ~ "Desconocida"
     ),
     Calidad_Germenes22C = case_when(
-      `Gérmenes Totales a 22ºC` <= 100 ~ "Aceptable",
+      `Gérmenes Totales a 22ºC` <= 100 ~ "Recomendable",
       `Gérmenes Totales a 22ºC` > 100 ~ "Alta",
       TRUE ~ "Desconocida"
     ),
     Calidad_Clostridium = case_when(
-      `Clostridium perfringens` == 0 ~ "Aceptable",
+      `Clostridium perfringens` == 0 ~ "Recomendable",
       `Clostridium perfringens` > 0 ~ "No Aceptable",
       TRUE ~ "Desconocida"
     ),
@@ -681,37 +672,141 @@ data_clean <- datos_2020 %>%
     )
   )
 
-# Crear un resumen de calidad por mes con columna "Aceptable/No Aceptable"
+#resumen de calidad por mes con columna final para el analisis
 resumen_por_mes <- data_clean %>%
   group_by(Mes) %>%
   summarise(
-    Calidad_pH = as.integer(any(Calidad_pH == "Buena", na.rm = TRUE)),
-    Calidad_Turbidez = as.integer(any(Calidad_Turbidez == "Óptima", na.rm = TRUE)),
-    Calidad_Cloro = as.integer(any(Calidad_Cloro == "Aceptable", na.rm = TRUE)),
-    Calidad_Color = as.integer(any(Calidad_Color == "Aceptable", na.rm = TRUE)),
-    Calidad_Olor = as.integer(any(Calidad_Olor == "Buen estado", na.rm = TRUE)),
-    Calidad_Sabor = as.integer(any(Calidad_Sabor == "Recomendable", na.rm = TRUE)),
-    Calidad_Temperatura = as.integer(any(Calidad_Temperatura == "Aceptable", na.rm = TRUE)),
-    Calidad_Cloruros = as.integer(any(Calidad_Cloruros == "Aceptable", na.rm = TRUE)),
-    Calidad_Fluor = as.integer(any(Calidad_Fluor == "Aceptable", na.rm = TRUE)),
-    Calidad_Sodio = as.integer(any(Calidad_Sodio == "Aceptable", na.rm = TRUE)),
-    Calidad_Aluminio = as.integer(any(Calidad_Aluminio == "Aceptable", na.rm = TRUE)),
-    Calidad_Trihalometanos = as.integer(any(Calidad_Trihalometanos == "Aceptable", na.rm = TRUE)),
-    Calidad_Oxidabilidad = as.integer(any(Calidad_Oxidabilidad == "Aceptable", na.rm = TRUE)),
-    Calidad_Germenes22C = as.integer(any(Calidad_Germenes22C == "Aceptable", na.rm = TRUE)),
-    Calidad_Clostridium = as.integer(any(Calidad_Clostridium == "Aceptable", na.rm = TRUE)),
-    Calidad_Calcio = as.integer(any(Calidad_Calcio == "Bajo", na.rm = TRUE)),
-    Calidad_Magnesio = as.integer(any(Calidad_Magnesio == "Bajo", na.rm = TRUE))
+    Calidad_pH = case_when(
+      Calidad_pH == "Recomendable" ~ "Recomendable",
+      Calidad_pH == "Ácida" ~ "Ácida",
+      Calidad_pH == "Alcalina" ~ "Alcalina",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Turbidez = case_when(
+      Calidad_Turbidez == "Recomendable" ~ "Recomendable",
+      Calidad_Turbidez == "Aceptable" ~ "Aceptable",
+      Calidad_Turbidez == "Mala" ~ "Mala",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Cloro = case_when(
+      Calidad_Cloro == "Recomendable" ~ "Recomendable",
+      Calidad_Cloro == "Moderada" ~ "Moderada",
+      Calidad_Cloro == "Alta" ~ "Alta",
+      Calidad_Cloro == "Excesiva" ~ "Excesiva",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Color = case_when(
+      Calidad_Color == "Recomendable" ~ "Recomendable",
+      Calidad_Color == "No Aceptable" ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Olor = case_when(
+      Calidad_Olor == "No aceptable" ~ "No aceptable",
+      Calidad_Olor == "Recomendable" ~ "Recomendable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Sabor = case_when(
+      Calidad_Sabor == "No recomendable" ~ "No recomendable",
+      Calidad_Sabor == "Recomendable" ~ "Recomendable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Temperatura = case_when(
+      Calidad_Temperatura == "Recomendable" ~ "Recomendable",
+      Calidad_Temperatura == "No Aceptable" ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Cloruros = case_when(
+      Calidad_Cloruros == "Recomendable" ~ "Recomendable",
+      Calidad_Cloruros == "Alta" ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Fluor = case_when(
+      Calidad_Fluor == "Recomendable" ~ "Recomendable",
+      Calidad_Fluor == "No Aceptable" ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Sodio = case_when(
+      Calidad_Sodio == "Recomendable" ~ "Recomendable",
+      Calidad_Sodio == "Alta" ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Aluminio = case_when(
+      Calidad_Aluminio == "Recomendable" ~ "Recomendable",
+      Calidad_Aluminio == "Alta" ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Trihalometanos = case_when(
+      Calidad_Trihalometanos == "Recomendable" ~ "Recomendable",
+      Calidad_Trihalometanos == "Alta" ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Oxidabilidad = case_when(
+      Calidad_Oxidabilidad == "Recomendable" ~ "Recomendable",
+      Calidad_Oxidabilidad == "Alta" ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Germenes22C = case_when(
+      Calidad_Germenes22C == "Recomendable" ~ "Recomendable",
+      Calidad_Germenes22C == "Alta" ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Clostridium = case_when(
+      Calidad_Clostridium == "Recomendable" ~ "Recomendable",
+      Calidad_Clostridium == "No Aceptable" ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Calcio = case_when(
+      Calidad_Calcio == "Bajo" ~ "Bajo",
+      Calidad_Calcio == "Moderado" ~ "Moderado",
+      Calidad_Calcio == "Alto" ~ "Alto",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Magnesio = case_when(
+      Calidad_Magnesio == "Bajo" ~ "Bajo",
+      Calidad_Magnesio == "Moderado" ~ "Moderado",
+      Calidad_Magnesio == "Alto" ~ "Alto",
+      TRUE ~ "Desconocida"
+    )
   ) %>%
   mutate(
-    Aceptable = if_else(
-      Calidad_pH == 1 & Calidad_Turbidez == 1 & Calidad_Cloro == 1 & Calidad_Color == 1 &
-      Calidad_Olor == 1 & Calidad_Sabor == 1 & Calidad_Temperatura == 1 & Calidad_Cloruros == 1 &
-      Calidad_Fluor == 1 & Calidad_Sodio == 1 & Calidad_Aluminio == 1 & Calidad_Trihalometanos == 1 &
-      Calidad_Oxidabilidad == 1 & Calidad_Germenes22C == 1 & Calidad_Clostridium == 1 &
-      Calidad_Calcio == 1 & Calidad_Magnesio == 1,
-      "Aceptable", 
-      "No Aceptable"
+    Aceptable = case_when(
+      Calidad_pH == "Recomendable" & 
+      Calidad_Turbidez == "Recomendable" & 
+      Calidad_Cloro == "Recomendable" & 
+      Calidad_Color == "Recomendable" &
+      Calidad_Olor == "Recomendable" & 
+      Calidad_Sabor == "Recomendable" & 
+      Calidad_Temperatura == "Recomendable" & 
+      Calidad_Cloruros == "Recomendable" &
+      Calidad_Fluor == "Recomendable" & 
+      Calidad_Sodio == "Recomendable" & 
+      Calidad_Aluminio == "Recomendable" & 
+      Calidad_Trihalometanos == "Recomendable" & 
+      Calidad_Oxidabilidad == "Recomendable" & 
+      Calidad_Germenes22C == "Recomendable" & 
+      Calidad_Clostridium == "Recomendable" & 
+      Calidad_Calcio == "Bajo" & 
+      Calidad_Magnesio == "Bajo" ~ "Aceptable",
+      TRUE ~ paste(
+        if_else(Calidad_pH != "Recomendable", Calidad_pH, ""),
+        if_else(Calidad_Turbidez != "Recomendable", Calidad_Turbidez, ""),
+        if_else(Calidad_Cloro != "Recomendable", Calidad_Cloro, ""),
+        if_else(Calidad_Color != "Recomendable", Calidad_Color, ""),
+        if_else(Calidad_Olor != "Recomendable", Calidad_Olor, ""),
+        if_else(Calidad_Sabor != "Recomendable", Calidad_Sabor, ""),
+        if_else(Calidad_Temperatura != "Recomendable", Calidad_Temperatura, ""),
+        if_else(Calidad_Cloruros != "Recomendable", Calidad_Cloruros, ""),
+        if_else(Calidad_Fluor != "Recomendable", Calidad_Fluor, ""),
+        if_else(Calidad_Sodio != "Recomendable", Calidad_Sodio, ""),
+        if_else(Calidad_Aluminio != "Recomendable", Calidad_Aluminio, ""),
+        if_else(Calidad_Trihalometanos != "Recomendable", Calidad_Trihalometanos, ""),
+        if_else(Calidad_Oxidabilidad != "Recomendable", Calidad_Oxidabilidad, ""),
+        if_else(Calidad_Germenes22C != "Recomendable", Calidad_Germenes22C, ""),
+        if_else(Calidad_Clostridium != "Recomendable", Calidad_Clostridium, ""),
+        if_else(Calidad_Calcio != "Bajo", Calidad_Calcio, ""),
+        if_else(Calidad_Magnesio != "Bajo", Calidad_Magnesio, ""),
+        sep = ", "
+      )
     )
   ) %>%
   arrange(Mes)
