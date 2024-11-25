@@ -880,6 +880,32 @@ ggplot(datos_long, aes(x = mes, y = valor)) +
 
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ejercicio numero 4
 
 ```{r}
