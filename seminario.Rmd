@@ -810,9 +810,7 @@ resumen_por_mes <- data_clean%>%
     )
   ) %>%
   arrange(Mes)
-
-# Visualizar el resumen por mes
-print(resumen_por_mes)
+colnames(resumen_por_mes)[ncol(resumen_por_mes)] <- "Evaluación_final"
 ```
 
 ```{r}
@@ -834,14 +832,14 @@ filas_cancer_colon <- which(str_detect(datosCC[[1]], "Cáncer de colon"))
 print(filas_cancer_colon)
 
 # Encontrar la primera fila de Cáncer de colon mayor que la fila de Asturias
-primer_fila_cancer_post_asturias <- min(filas_cancer_colon[filas_cancer_colon > fila_asturias])
+filaCCdeAsturias <- min(filas_cancer_colon[filas_cancer_colon > fila_asturias])
 
 # Seleccionar la fila de "Asturias, Principado de", la fila de Cáncer de colon encontrada y las tres siguientes
 filas_seleccionadas <- c(fila_asturias, 
-                         primer_fila_cancer_post_asturias, 
-                         primer_fila_cancer_post_asturias + 1, 
-                         primer_fila_cancer_post_asturias + 2, 
-                         primer_fila_cancer_post_asturias + 3)
+                         filaCCdeAsturias, 
+                         filaCCdeAsturias + 1, 
+                         filaCCdeAsturias + 2, 
+                         filaCCdeAsturias + 3)
 
 # Filtrar las filas seleccionadas
 datos_seleccionados <- datosCC %>%
@@ -852,4 +850,33 @@ colnames(datos_seleccionados) <- c("info", "total", "enero", "febrero", "marzo",
 
 ```
 
+```{r}
+# Cargar librerías necesarias
+library(ggplot2)
+library(tidyr)
+
+# Seleccionar la fila 'total' (fila 3) y las columnas de enero a mayo
+total_row <- datos_seleccionados[3, 3:7]  # Fila 3, columnas de enero a mayo
+
+# Convertir los datos a formato largo (meses en una columna)
+datos_long <- data.frame(mes = colnames(datos_seleccionados)[3:7],  # Nombres de las columnas de enero a mayo
+                         valor = as.numeric(total_row))  # Valores de la fila "total" convertidos a numéricos
+
+# Asegurar que los meses estén en el orden correcto
+datos_long$mes <- factor(datos_long$mes, levels = c("enero", "febrero", "marzo", "abril", "mayo"))
+
+# Crear el diagrama de barras con todas las barras en gris
+ggplot(datos_long, aes(x = mes, y = valor)) +
+  geom_bar(stat = "identity", fill = "gray") +  # Barras en color gris
+  labs(title = "Total de Cáncer de Colon por Mes",
+       x = "Mes",
+       y = "Total de Defunciones") +
+  theme_minimal()  # Tema minimalista
+
+
+```
+
+```{r}
+
+```
 
