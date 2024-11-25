@@ -880,3 +880,72 @@ ggplot(datos_long, aes(x = mes, y = valor)) +
 
 ```
 
+ejercicio numero 4
+
+```{r}
+# Unir tabaquismo y calidad del agua
+tabla_combinada <- fumadores_asturias %>%
+  inner_join(calidad_agua_2023, by = "Mes")  # Unir por el Mes común
+
+# Verificar la tabla combinada
+print(tabla_combinada)
+
+```
+
+```{r}
+# Calcular correlaciones entre tabaquismo, calidad del agua y cáncer
+correlaciones_conjuntas <- tabla_combinada %>%
+  select(valor, pH, Nitratos, Conductividad, `Bacterías Coliformes`) %>%
+  summarise(across(everything(), ~ cor(., tabla_combinada$valor, use = "complete.obs")))
+
+# Mostrar correlaciones
+print(correlaciones_conjuntas)
+
+# Visualizar en un mapa de calor
+library(reshape2)
+library(ggplot2)
+
+correlaciones_melt <- melt(as.matrix(correlaciones_conjuntas))
+
+ggplot(correlaciones_melt, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0) +
+  labs(title = "Mapa de calor: Interacción entre tabaquismo, calidad del agua y cáncer",
+       x = "Variables",
+       y = "Correlación") +
+  theme_minimal()
+
+```
+
+```{r}
+ggplot(tabla_combinada, aes(x = valor, y = `Bacterías Coliformes`)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "blue") +
+  labs(title = "Relación entre tabaquismo y bacterias coliformes",
+       x = "Nivel de Tabaquismo",
+       y = "Bacterias Coliformes Promedio") +
+  theme_minimal()
+
+```
+
+```{r}
+ggplot(tabla_combinada, aes(x = `Nitratos`, y = valor)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "green") +
+  labs(title = "Relación entre nitratos en el agua y tabaquismo",
+       x = "Nitratos promedio",
+       y = "Nivel de Tabaquismo") +
+  theme_minimal()
+
+```
+
+```{r}
+ggplot(tabla_combinada, aes(x = valor, y = `pH`, color = `Bacterías Coliformes`)) +
+  geom_point() +
+  labs(title = "Interacción entre tabaquismo, pH y bacterias coliformes",
+       x = "Nivel de Tabaquismo",
+       y = "pH del Agua") +
+  theme_minimal()
+
+```
+
