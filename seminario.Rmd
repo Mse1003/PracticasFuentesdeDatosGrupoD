@@ -671,9 +671,9 @@ data_clean <- datos_2020 %>%
       TRUE ~ "Desconocida"
     )
   )
-
+  
 #resumen de calidad por mes con columna final para el analisis
-resumen_por_mes <- data_clean %>%
+resumen_por_mes <- data_clean%>%
   group_by(Mes) %>%
   summarise(
     Calidad_pH = case_when(
@@ -815,5 +815,41 @@ resumen_por_mes <- data_clean %>%
 print(resumen_por_mes)
 ```
 
+```{r}
+#Ahora la base de datos de cácncer de colon
+# Cargar librerías necesarias
+library(readxl)
+library(dplyr)
+library(stringr)
+
+# Cargar el archivo Excel (sin saltarse ninguna fila)
+datosCC <- read_excel("INPUT/DATA/03009d.xlsx", skip = 5)
+
+# Buscar la fila de Asturias, Principado de
+fila_asturias <- which(str_detect(datosCC[[1]], "Asturias, Principado de"))
+print(fila_asturias)
+
+# Buscar las filas que contienen "Cáncer de colon"
+filas_cancer_colon <- which(str_detect(datosCC[[1]], "Cáncer de colon"))
+print(filas_cancer_colon)
+
+# Encontrar la primera fila de Cáncer de colon mayor que la fila de Asturias
+primer_fila_cancer_post_asturias <- min(filas_cancer_colon[filas_cancer_colon > fila_asturias])
+
+# Seleccionar la fila de "Asturias, Principado de", la fila de Cáncer de colon encontrada y las tres siguientes
+filas_seleccionadas <- c(fila_asturias, 
+                         primer_fila_cancer_post_asturias, 
+                         primer_fila_cancer_post_asturias + 1, 
+                         primer_fila_cancer_post_asturias + 2, 
+                         primer_fila_cancer_post_asturias + 3)
+
+# Filtrar las filas seleccionadas
+datos_seleccionados <- datosCC %>%
+  slice(filas_seleccionadas)
+
+# Cambiar los nombres de las columnas
+colnames(datos_seleccionados) <- c("info", "total", "enero", "febrero", "marzo", "abril", "mayo")
+
+```
 
 
