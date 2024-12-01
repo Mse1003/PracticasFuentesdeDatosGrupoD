@@ -174,11 +174,6 @@ cancer_colon <- datosEnfermedades %>%
 #View(cancer_colon)
 summary(cancer_colon)
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-```{r}
 # Paso 1: Filtrar y preparar los datos de tabaquismo para Asturias
 # Aquí trabajamos con la tabla fumadores_asturias_final ya filtrada para Asturias
 >>>>>>> baca0924586aa14eaadbfb24bc85aa8e0b330093
@@ -209,11 +204,6 @@ correlacion_ex_fumador <- cor(cancer_colon_promedio$Defunciones, fumadores_prome
 print(paste("Correlación entre fumadores diarios y defunciones por cáncer de colon:", correlacion_fumador_diario))
 print(paste("Correlación entre ex fumadores y defunciones por cáncer de colon:", correlacion_ex_fumador))
 
-<<<<<<< HEAD
-=======
-
->>>>>>> a45298a4faa1b43b582c4d2b51c09be718dcba35
->>>>>>> baca0924586aa14eaadbfb24bc85aa8e0b330093
 ```
 
 ## Pregunta 1: ¿cual es la incidencia del tabaquismo en asturias?¿Hay relacion con el cancer de colon? En caso de haberla, ¿Como afecta dicha relacion?
