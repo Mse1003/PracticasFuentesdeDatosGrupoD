@@ -1,5 +1,5 @@
 ---
-title: "seminario fuentes sobre el impacto del agua y el tabaquismo en el cancer de colon"
+title: "impacto del agua y el tabaquismo en el cancer de colon"
 subtitle: "Fuentes de datos Biomédicas y Web semántica, Grado de Ingeniería de la Salud"
 author: "Álvaro Martín,Miguel Soriano, Andres Arribas"
 date: "`r Sys.Date()`"
@@ -35,8 +35,8 @@ El propósito principal de este estudio es explorar y entender la relación entr
 
 A través de estos objetivos, esperamos proporcionar una visión más completa de cómo estos factores pueden influir en la salud humana y contribuir al conocimiento de la incidencia del cáncer de colon.
 
-# Importación de las librerias necesarias 
-En este apartado añadimos todas las librerias necesarias para realizar el trabajo
+# Importación de las librerias y paquetes necesarios
+En este apartado añadimos todas las librerias y paquetesnecesarios para realizar el trabajo
 ```{r}
 library(tidyverse)
 library(readxl)
@@ -44,6 +44,8 @@ library(readr)
 library(jsonlite)
 library(dplyr)
 library(tidyr)
+library(reshape2)
+install.packages("reshape2")
 ```
 # Importacion de las fuentes de datos 
 
@@ -63,13 +65,6 @@ Agua_gijon
 summary(Agua_gijon)
 table(Agua_gijon$T.RED)
 
-
-#carga de datos json sobre los fumadores en asturias incluyendo a gijon
-#esta hay que abrirla bien
-# Cargar las librerías necesarias
-library(tidyverse)
-library(jsonlite)
-
 # Cargar el archivo JSON de fumadores y transformarlo en un tibble
 datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE) %>%
   as_tibble()
@@ -83,8 +78,7 @@ summary(datos_fumadores)
 
 
 #carga de cancer de colon
-# Cargar la librería necesaria
-library(readxl)
+
 
 # Cargar el archivo Excel, omitiendo las primeras 6 filas y usando la fila 7 como encabezado
 datosEnfermedades <- read_excel("INPUT/DATA/03009d.xlsx", skip = 5)
@@ -99,10 +93,6 @@ datosEnfermedades <- read_excel("INPUT/DATA/03009d.xlsx", skip = 5)
 
 
 ```{r}
-# Cargar librerías necesarias
-library(tidyverse)
-library(jsonlite)
-
 # Cargar el archivo JSON de fumadores
 datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE) %>%
   as_tibble()
@@ -142,7 +132,7 @@ summary(datosEnfermedades)
 Este paso es necesario ya que al relacionar todas las tablas entre si necesitamos que aquellas columnas que son comunes tengan los mismos nombres, por ello se ha requerido que todos los nombres de las comunidades y ciudades autonomas presentes sean cambiados a nombres comunes elegidos por el grupo. Por otro lado hemos usado el select para seleccionar las columnas de datos que nos resultan de interes para el estudio.
 
 ```{r}
-agua_gijon <- agua_gijons%>%
+agua_gijon <- agua_gijon%>%
   mutate(
     CCAA= case_when( ## cambiamos el nombre con un case_When
       fumadores$`Comunidades y Ciudades Autónomas`== "Andalucía" ~ "Andalucia",
@@ -193,6 +183,51 @@ cancer_colon <- datosEnfermedades %>%
 summary(cancer_colon)
 ```
 
+<<<<<<< HEAD
+=======
+```{r}
+# Paso 1: Filtrar y preparar los datos de tabaquismo para Asturias
+# Aquí trabajamos con la tabla fumadores_asturias_final ya filtrada para Asturias
+fumadores_asturias_prevalencia <- fumadores_asturias_final %>%
+  filter(Categoria %in% c("Fumador diario", "Ex fumador")) %>%
+  select(Sexo, Categoria, Valor) %>%
+  spread(key = Categoria, value = Valor)
+
+# Visualizar la prevalencia de fumadores en Asturias
+#View(fumadores_asturias_prevalencia)
+
+# Paso 2: Preparar los datos de cáncer de colon para Asturias (ya específico para Asturias en la carga inicial)
+# Seleccionar solo las columnas que contienen datos mensuales
+cancer_colon_asturias <- datosEnfermedades %>%
+  filter(grepl("Cáncer de colon", .[[1]], ignore.case = TRUE)) %>%
+  select(-1) %>%
+  gather(key = "Mes", value = "Defunciones", -1)
+
+# Visualizar los datos de defunciones por cáncer de colon en Asturias
+#View(cancer_colon_asturias)
+
+# Paso 3: Realizar el análisis de correlación entre tabaquismo y cáncer de colon
+
+# Calcular la media de defunciones de cáncer de colon para cada mes
+cancer_colon_promedio <- cancer_colon_asturias %>%
+  group_by(Mes) %>%
+  summarise(Defunciones = mean(Defunciones, na.rm = TRUE))
+
+# Calcular la media de prevalencia de fumadores (Fumador diario y Ex fumador)
+fumadores_promedio <- fumadores_asturias_prevalencia %>%
+  summarise(Fumador_diario = mean(`Fumador diario`, na.rm = TRUE),
+            Ex_fumador = mean(`Ex fumador`, na.rm = TRUE))
+
+# Combinar ambos conjuntos de datos y calcular la correlación entre la prevalencia de fumadores diarios y defunciones por cáncer de colon
+correlacion_fumador_diario <- cor(cancer_colon_promedio$Defunciones, fumadores_promedio$Fumador_diario, use = "complete.obs")
+correlacion_ex_fumador <- cor(cancer_colon_promedio$Defunciones, fumadores_promedio$Ex_fumador, use = "complete.obs")
+
+
+print(paste("Correlación entre fumadores diarios y defunciones por cáncer de colon:", correlacion_fumador_diario))
+print(paste("Correlación entre ex fumadores y defunciones por cáncer de colon:", correlacion_ex_fumador))
+
+
+>>>>>>> a45298a4faa1b43b582c4d2b51c09be718dcba35
 ```
 fumadores ejercicio 1
 ```{r}
@@ -424,13 +459,6 @@ print(correlaciones)
 ```
 
 grafica con los resultados obtenidos
-
-```{r}
-install.packages("reshape2")
-library(reshape2)
-
-```
-
 ```{r}
 # Convertir la tabla de calidad del agua a formato largo
 calidad_agua_long <- calidad_agua_2023 %>%
