@@ -120,37 +120,6 @@ summary(datosEnfermedades)
 # Cambios en las fuentes de datos
 Este paso es necesario ya que al relacionar todas las tablas entre si necesitamos que aquellas columnas que son comunes tengan los mismos nombres, por ello se ha requerido que todos los nombres de las comunidades y ciudades autonomas presentes sean cambiados a nombres comunes elegidos por el grupo. Por otro lado hemos usado el select para seleccionar las columnas de datos que nos resultan de interes para el estudio.
 
-```{r}
-agua_gijon <- agua_gijon%>%
-  mutate(
-    CCAA= case_when( ## cambiamos el nombre con un case_When
-      fumadores$`Comunidades y Ciudades Autónomas`== "Andalucía" ~ "Andalucia",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Aragón" ~ "Aragon",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Asturias (Principado de)" ~ "Asturias",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Balears (Illes)" ~ "Baleares",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Canarias" ~ "Canarias",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Cantabria" ~ "Cantabria",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Castilla y León" ~ "CyL",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Castilla - La Mancha" ~ "Castilla la Mancha",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Cataluña" ~ "Cataluña",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Comunitat Valenciana" ~ "C.Valencia",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Extremadura" ~ "Extremadura",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Galicia" ~ "Galicia",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Madrid (Comunidad de)" ~ "Madrid",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Murcia (Región de)" ~ "Murcia",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Navarra (Comunidad Foral de)" ~ "Navarra",
-      fumadores$`Comunidades y Ciudades Autónomas`== "País Vasco" ~ "País Vasco",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Rioja (La)" ~ "La Rioja",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Ceuta (Ciudad Autónoma de)" ~ "Ceuta",
-      fumadores$`Comunidades y Ciudades Autónomas`== "Melilla (Ciudad Autónoma de)" ~ "Melilla",
-    )) %>%
-select(`CCAA`,`Consumo de tabaco`,Total,) %>%
-  na.exclude()%>%
-  filter(`Consumo de tabaco` != "TOTAL")
-fumadores
-      
-```
-
 
 =======
 #cancer de colon filtrado por hombre y mujer
@@ -170,45 +139,10 @@ cancer_colon <- datosEnfermedades %>%
 # Visualizar los datos filtrados de Cáncer de colon
 #View(cancer_colon)
 summary(cancer_colon)
-```
-<<<<<<< HEAD
-=======
-```{r}
-# Paso 1: Filtrar y preparar los datos de tabaquismo para Asturias
-# Aquí trabajamos con la tabla fumadores_asturias_final ya filtrada para Asturias
-fumadores_asturias_prevalencia <- fumadores_asturias_final %>%
-  filter(Categoria %in% c("Fumador diario", "Ex fumador")) %>%
-  select(Sexo, Categoria, Valor) %>%
-  spread(key = Categoria, value = Valor)
-# Visualizar la prevalencia de fumadores en Asturias
-#View(fumadores_asturias_prevalencia)
-# Paso 2: Preparar los datos de cáncer de colon para Asturias (ya específico para Asturias en la carga inicial)
-# Seleccionar solo las columnas que contienen datos mensuales
-cancer_colon_asturias <- datosEnfermedades %>%
-  filter(grepl("Cáncer de colon", .[[1]], ignore.case = TRUE)) %>%
-  select(-1) %>%
-  gather(key = "Mes", value = "Defunciones", -1)
-# Visualizar los datos de defunciones por cáncer de colon en Asturias
-#View(cancer_colon_asturias)
-# Paso 3: Realizar el análisis de correlación entre tabaquismo y cáncer de colon
-# Calcular la media de defunciones de cáncer de colon para cada mes
-cancer_colon_promedio <- cancer_colon_asturias %>%
-  group_by(Mes) %>%
-  summarise(Defunciones = mean(Defunciones, na.rm = TRUE))
-# Calcular la media de prevalencia de fumadores (Fumador diario y Ex fumador)
-fumadores_promedio <- fumadores_asturias_prevalencia %>%
-  summarise(Fumador_diario = mean(`Fumador diario`, na.rm = TRUE),
-            Ex_fumador = mean(`Ex fumador`, na.rm = TRUE))
-# Combinar ambos conjuntos de datos y calcular la correlación entre la prevalencia de fumadores diarios y defunciones por cáncer de colon
-correlacion_fumador_diario <- cor(cancer_colon_promedio$Defunciones, fumadores_promedio$Fumador_diario, use = "complete.obs")
-correlacion_ex_fumador <- cor(cancer_colon_promedio$Defunciones, fumadores_promedio$Ex_fumador, use = "complete.obs")
-print(paste("Correlación entre fumadores diarios y defunciones por cáncer de colon:", correlacion_fumador_diario))
-print(paste("Correlación entre ex fumadores y defunciones por cáncer de colon:", correlacion_ex_fumador))
->>>>>>> a45298a4faa1b43b582c4d2b51c09be718dcba35
-```
+
 fumadores ejercicio 1
 ```{r}
-# Extraer solo los campos necesarios del JSON
+#Extraer solo los campos necesarios del JSON
 fumadores_asturias <- datos_fumadores %>%
   mutate(
     Valor = map_dbl(Data, ~ if (!is.null(.x$Valor)) .x$Valor else NA_real_)
@@ -331,30 +265,6 @@ convertir todos los meses en mayuscula
 Agua_gijon <- Agua_gijon %>%
   mutate(Mes = toupper(Mes))
 # Verificar los datos para asegurarse de que los meses están en mayúsculas
-print(Agua_gijon$Mes)
-```
-Ésta celda no es necesaria pero no borrar, pero no ejecutar
-```{r}
-#cambiar nombres del mes
-# Diccionario de mapeo entre los nombres actuales y los nombres estándar
-meses_mapeo <- c(
-  "enero" = "ENERO",
-  "febrero" = "FEBRERO",
-  "marzo" = "MARZO",
-  "abril" = "ABRIL",
-  "mayo" = "MAYO",
-  "Junio" = "JUNIO",
-  "Julio" = "JULIO",
-  "Agosto" = "AGOSTO",
-  "Septiembre" = "SEPTIEMBRE",
-  "octubre" = "OCTUBRE",
-  "Noviembre" = "NOVIEMBRE",
-  "Diciembre" = "DICIEMBRE"
-)
-# Cambiar los nombres de los meses en la columna `Mes` de Agua_gijon
-Agua_gijon <- Agua_gijon %>%
-  mutate(Mes = meses_mapeo[Mes])
-# Verificar los datos para asegurarse de que los meses han cambiado
 print(Agua_gijon$Mes)
 ```
 
