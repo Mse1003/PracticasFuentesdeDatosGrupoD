@@ -56,13 +56,14 @@ En este apartado añadimos las diferentes fuentes de datos que hemos utilizado p
 datos_paisVasco <- read_excel("INPUT/DATA/control_analitico.xlsx")
 str(datos_paisVasco)
 summary(datos_paisVasco)
-
+#View(datos_paisVasco)
 
 #carga de datos csv sobre calidad de agua en gijon
 Agua_gijon <- read_delim("INPUT/DATA/731.csv", 
                       delim = ",", escape_double = FALSE, trim_ws = TRUE)
 Agua_gijon
 summary(Agua_gijon)
+#View(Agua_gijon)
 table(Agua_gijon$T.RED)
 
 # Cargar el archivo JSON de fumadores y transformarlo en un tibble
@@ -74,6 +75,7 @@ datos_fumadores <- datos_fumadores %>%
   separate(Nombre, into = c("Sexo", "Region", "Categoria"), sep = ", ", fill = "right")
 
 # Visualizar los datos para confirmar la estructura
+#View(datos_fumadores)
 summary(datos_fumadores)
 
 
@@ -84,15 +86,9 @@ summary(datos_fumadores)
 datosEnfermedades <- read_excel("INPUT/DATA/03009d.xlsx", skip = 5)
 
 # Visualizar la tabla general
+#View(datosEnfermedades)
 #summary(datosEnfermedades)
 
-
-
-
-```
-
-
-```{r}
 # Cargar el archivo JSON de fumadores
 datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE) %>%
   as_tibble()
@@ -128,7 +124,7 @@ summary(datosEnfermedades)
 
 ```
 
-# Cambios en las fuentes de datos
+# Cambios en las fuentes de datos y operaciones con estas
 Este paso es necesario ya que al relacionar todas las tablas entre si necesitamos que aquellas columnas que son comunes tengan los mismos nombres, por ello se ha requerido que todos los nombres de las comunidades y ciudades autonomas presentes sean cambiados a nombres comunes elegidos por el grupo. Por otro lado hemos usado el select para seleccionar las columnas de datos que nos resultan de interes para el estudio.
 
 ```{r}
@@ -159,11 +155,7 @@ select(`CCAA`,`Consumo de tabaco`,Total,) %>%
   na.exclude()%>%
   filter(`Consumo de tabaco` != "TOTAL")
 fumadores
-      
-```
 
-
-=======
 #cancer de colon filtrado por hombre y mujer
 # Cargar la librería necesaria
 library(readxl)
@@ -181,32 +173,17 @@ cancer_colon <- datosEnfermedades %>%
 # Visualizar los datos filtrados de Cáncer de colon
 #View(cancer_colon)
 summary(cancer_colon)
-```
 
-```{r}
-# Paso 1: Filtrar y preparar los datos de tabaquismo para Asturias
-# Aquí trabajamos con la tabla fumadores_asturias_final ya filtrada para Asturias
 fumadores_asturias_prevalencia <- fumadores_asturias_final %>%
   filter(Categoria %in% c("Fumador diario", "Ex fumador")) %>%
   select(Sexo, Categoria, Valor) %>%
   spread(key = Categoria, value = Valor)
-
-# Visualizar la prevalencia de fumadores en Asturias
-#View(fumadores_asturias_prevalencia)
-
-# Paso 2: Preparar los datos de cáncer de colon para Asturias (ya específico para Asturias en la carga inicial)
-# Seleccionar solo las columnas que contienen datos mensuales
+  
 cancer_colon_asturias <- datosEnfermedades %>%
   filter(grepl("Cáncer de colon", .[[1]], ignore.case = TRUE)) %>%
   select(-1) %>%
   gather(key = "Mes", value = "Defunciones", -1)
-
-# Visualizar los datos de defunciones por cáncer de colon en Asturias
-#View(cancer_colon_asturias)
-
-# Paso 3: Realizar el análisis de correlación entre tabaquismo y cáncer de colon
-
-# Calcular la media de defunciones de cáncer de colon para cada mes
+  
 cancer_colon_promedio <- cancer_colon_asturias %>%
   group_by(Mes) %>%
   summarise(Defunciones = mean(Defunciones, na.rm = TRUE))
@@ -224,9 +201,9 @@ correlacion_ex_fumador <- cor(cancer_colon_promedio$Defunciones, fumadores_prome
 print(paste("Correlación entre fumadores diarios y defunciones por cáncer de colon:", correlacion_fumador_diario))
 print(paste("Correlación entre ex fumadores y defunciones por cáncer de colon:", correlacion_ex_fumador))
 
-
 ```
-fumadores ejercicio 1
+
+## Pregunta 1: ¿cual es la incidencia del tabaquismo en asturias?¿Hay relacion con el cancer de colon? En caso de haberla, ¿Como afecta dicha relacion?
 ```{r}
 # Extraer solo los campos necesarios del JSON
 fumadores_asturias <- datos_fumadores %>%
@@ -248,10 +225,6 @@ fumadores_relevantes <- fumadores_asturias %>%
 # Ver los datos filtrados
 print(fumadores_relevantes)
 
-```
-
-cancer de colon ejercicio 1
-```{r}
 # Cargar los datos de enfermedades (asegúrate de que el archivo esté correctamente cargado)
 datosEnfermedades <- read_excel("INPUT/DATA/03009d.xlsx")
 
@@ -268,9 +241,8 @@ cancer_colon_final <- datosEnfermedades %>%
 # Verificar el resultado final
 print(cancer_colon_final)
 
-```
-relacion entre fumadores y cancer de colon 
-```{r}
+
+##DEMOSTRACION DE LA RELACION ENTRE EL TABAQUISMO Y EL CANCER DE COLON
 # Cargar las tablas procesadas de tabaquismo y cáncer de colon
 # Suponiendo que fumadores_asturias y cancer_colon_final ya están procesados
 
@@ -294,7 +266,7 @@ tabla_combinada <- fumadores_asturias %>%
     CasosCancerColonTotal = Total
   ) %>%
   mutate(
-    CasosCancerColonPonderados = (PrevalenciaTabaquismo / 100) * CasosCancerColonTotal  # Ponderar casos de cáncer
+    CasosCancerColonPonderados = (PrevalenciaTabaquismo / 100) * CasosCancerColonTotal  
   )
 
 # Verificar la tabla combinada
@@ -308,9 +280,7 @@ correlacion <- tabla_combinada %>%
 # Verificar la correlación
 print(correlacion)
 
-```
-grafico 
-```{r}
+#GRAFICO:
 # Crear un gráfico de dispersión para visualizar la relación
 library(ggplot2)
 
@@ -339,6 +309,374 @@ tabla_combinada %>%
 
 
 ```
+
+## Pregunta 2: ¿cual es la incidencia del tabaquismo en asturias?¿Hay relacion con el cancer de colon? En caso de haberla, ¿Como afecta dihca relacion?
+```{r}
+#Ejercicio 2
+library(readr)
+library(dplyr)
+library(tidyr)
+
+# Cargar datos de calidad del agua, añadiendo la coma por decimales para los errores.
+Agua_gijon_ej2 <- read_delim("INPUT/DATA/123.csv", 
+                             delim = ";", 
+                             locale = locale(decimal_mark = ","),  # Coma como separador decimal
+                             escape_double = FALSE, 
+                             trim_ws = TRUE, 
+                             show_col_types = FALSE)
+
+
+# Asegurarse de que los nombres de los meses estén en mayúsculas
+Agua_gijon_ej2 <- Agua_gijon_ej2 %>%
+  mutate(Mes = toupper(Mes))
+
+# Filtrar datos para el año 2020 y los meses de enero a mayo
+datos_2020 <- Agua_gijon_ej2 %>%
+  filter(Año == 2020, Mes %in% c("ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO"))
+
+# Ordenar los meses
+datos_2020 <- datos_2020 %>%
+  mutate(
+    Mes = factor(Mes, levels = c("ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO"))
+  ) %>%
+  arrange(Mes)
+
+# Clasificación de la calidad para todos los parámetros del agua la mayoria segun la OMS
+data_clean <- datos_2020 %>%
+  mutate(
+    Calidad_pH = case_when(
+      pH >= 6.5 & pH <= 8.5 ~ "Recomendable",
+      pH < 6.5 ~ "Ácida",
+      pH > 8.5 ~ "Alcalina",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Turbidez = case_when(
+      Turbidez <= 1 ~ "Recomendable",
+      Turbidez > 1 & Turbidez <= 5 ~ "Aceptable",
+      Turbidez > 5 ~ "Mala",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Cloro = case_when(
+      `Cloro Libre` <= 0.5 ~ "Recomendable",
+      `Cloro Libre` > 0.5 & `Cloro Libre` <= 1.5 ~ "Moderada",
+      `Cloro Libre` > 1.5 & `Cloro Libre` <= 4.0 ~ "Alta",
+      `Cloro Libre` > 4.0 ~ "Excesiva",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Color = case_when(
+      as.numeric(`Color Max: 15 Ud: pl/mg`) <= 15 ~ "Recomendable",
+      as.numeric(`Color Max: 15 Ud: pl/mg`) > 15 ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Olor = case_when(
+      Olor == 0 ~ "No aceptable",
+      Olor > 0 ~ "Recomendable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Sabor = case_when(
+      Sabor == 0 ~ "No recomendable",
+      Sabor > 0 ~ "Recomendable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Temperatura = case_when(
+      Temperatura <= 25 ~ "Recomendable",
+      Temperatura > 25 ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Cloruros = case_when(
+      Cloruros <= 250 ~ "Recomendable",
+      Cloruros > 250 ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Fluor = case_when(
+      Fluor <= 1.5 ~ "Recomendable",
+      Fluor > 1.5 ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Sodio = case_when(
+      Sodio <= 200 ~ "Recomendable",
+      Sodio > 200 ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Aluminio = case_when(
+      Aluminio <= 0.2 ~ "Recomendable",
+      Aluminio > 0.2 ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Trihalometanos = case_when(
+      Trihalometanos <= 100 ~ "Recomendable",
+      Trihalometanos > 100 ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Oxidabilidad = case_when(
+      Oxidabilidad <= 5 ~ "Recomendable",
+      Oxidabilidad > 5 ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Germenes22C = case_when(
+      `Gérmenes Totales a 22ºC` <= 100 ~ "Recomendable",
+      `Gérmenes Totales a 22ºC` > 100 ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Clostridium = case_when(
+      `Clostridium perfringens` == 0 ~ "Recomendable",
+      `Clostridium perfringens` > 0 ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Calcio = case_when(
+      Calcio <= 100 ~ "Bajo",
+      Calcio > 100 & Calcio <= 300 ~ "Moderado",
+      Calcio > 300 ~ "Alto",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Magnesio = case_when(
+      Magnesio <= 30 ~ "Bajo",
+      Magnesio > 30 & Magnesio <= 50 ~ "Moderado",
+      Magnesio > 50 ~ "Alto",
+      TRUE ~ "Desconocida"
+    )
+  )
+  
+#resumen de calidad por mes con columna final para el analisis
+resumen_por_mes <- data_clean%>%
+  group_by(Mes) %>%
+  summarise(
+    Calidad_pH = case_when(
+      Calidad_pH == "Recomendable" ~ "Recomendable",
+      Calidad_pH == "Ácida" ~ "Ácida",
+      Calidad_pH == "Alcalina" ~ "Alcalina",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Turbidez = case_when(
+      Calidad_Turbidez == "Recomendable" ~ "Recomendable",
+      Calidad_Turbidez == "Aceptable" ~ "Aceptable",
+      Calidad_Turbidez == "Mala" ~ "Mala",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Cloro = case_when(
+      Calidad_Cloro == "Recomendable" ~ "Recomendable",
+      Calidad_Cloro == "Moderada" ~ "Moderada",
+      Calidad_Cloro == "Alta" ~ "Alta",
+      Calidad_Cloro == "Excesiva" ~ "Excesiva",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Color = case_when(
+      Calidad_Color == "Recomendable" ~ "Recomendable",
+      Calidad_Color == "No Aceptable" ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Olor = case_when(
+      Calidad_Olor == "No aceptable" ~ "No aceptable",
+      Calidad_Olor == "Recomendable" ~ "Recomendable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Sabor = case_when(
+      Calidad_Sabor == "No recomendable" ~ "No recomendable",
+      Calidad_Sabor == "Recomendable" ~ "Recomendable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Temperatura = case_when(
+      Calidad_Temperatura == "Recomendable" ~ "Recomendable",
+      Calidad_Temperatura == "No Aceptable" ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Cloruros = case_when(
+      Calidad_Cloruros == "Recomendable" ~ "Recomendable",
+      Calidad_Cloruros == "Alta" ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Fluor = case_when(
+      Calidad_Fluor == "Recomendable" ~ "Recomendable",
+      Calidad_Fluor == "No Aceptable" ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Sodio = case_when(
+      Calidad_Sodio == "Recomendable" ~ "Recomendable",
+      Calidad_Sodio == "Alta" ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Aluminio = case_when(
+      Calidad_Aluminio == "Recomendable" ~ "Recomendable",
+      Calidad_Aluminio == "Alta" ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Trihalometanos = case_when(
+      Calidad_Trihalometanos == "Recomendable" ~ "Recomendable",
+      Calidad_Trihalometanos == "Alta" ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Oxidabilidad = case_when(
+      Calidad_Oxidabilidad == "Recomendable" ~ "Recomendable",
+      Calidad_Oxidabilidad == "Alta" ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Germenes22C = case_when(
+      Calidad_Germenes22C == "Recomendable" ~ "Recomendable",
+      Calidad_Germenes22C == "Alta" ~ "Alta",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Clostridium = case_when(
+      Calidad_Clostridium == "Recomendable" ~ "Recomendable",
+      Calidad_Clostridium == "No Aceptable" ~ "No Aceptable",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Calcio = case_when(
+      Calidad_Calcio == "Bajo" ~ "Bajo",
+      Calidad_Calcio == "Moderado" ~ "Moderado",
+      Calidad_Calcio == "Alto" ~ "Alto",
+      TRUE ~ "Desconocida"
+    ),
+    Calidad_Magnesio = case_when(
+      Calidad_Magnesio == "Bajo" ~ "Bajo",
+      Calidad_Magnesio == "Moderado" ~ "Moderado",
+      Calidad_Magnesio == "Alto" ~ "Alto",
+      TRUE ~ "Desconocida"
+    )
+  ) %>%
+  mutate(
+    BuenEstado = case_when(
+      Calidad_pH == "Recomendable" & 
+      Calidad_Turbidez == "Recomendable" & 
+      Calidad_Cloro == "Recomendable" & 
+      Calidad_Color == "Recomendable" &
+      Calidad_Olor == "Recomendable" & 
+      Calidad_Sabor == "Recomendable" & 
+      Calidad_Temperatura == "Recomendable" & 
+      Calidad_Cloruros == "Recomendable" &
+      Calidad_Fluor == "Recomendable" & 
+      Calidad_Sodio == "Recomendable" & 
+      Calidad_Aluminio == "Recomendable" & 
+      Calidad_Trihalometanos == "Recomendable" & 
+      Calidad_Oxidabilidad == "Recomendable" & 
+      Calidad_Germenes22C == "Recomendable" & 
+      Calidad_Clostridium == "Recomendable" & 
+      Calidad_Calcio == "Bajo" & 
+      Calidad_Magnesio == "Bajo" ~ "Recomendable",
+      TRUE ~ paste(
+        if_else(Calidad_pH != "Recomendable", Calidad_pH, ""),
+        if_else(Calidad_Turbidez != "Recomendable", Calidad_Turbidez, ""),
+        if_else(Calidad_Cloro != "Recomendable", Calidad_Cloro, ""),
+        if_else(Calidad_Color != "Recomendable", Calidad_Color, ""),
+        if_else(Calidad_Olor != "Recomendable", Calidad_Olor, ""),
+        if_else(Calidad_Sabor != "Recomendable", Calidad_Sabor, ""),
+        if_else(Calidad_Temperatura != "Recomendable", Calidad_Temperatura, ""),
+        if_else(Calidad_Cloruros != "Recomendable", Calidad_Cloruros, ""),
+        if_else(Calidad_Fluor != "Recomendable", Calidad_Fluor, ""),
+        if_else(Calidad_Sodio != "Recomendable", Calidad_Sodio, ""),
+        if_else(Calidad_Aluminio != "Recomendable", Calidad_Aluminio, ""),
+        if_else(Calidad_Trihalometanos != "Recomendable", Calidad_Trihalometanos, ""),
+        if_else(Calidad_Oxidabilidad != "Recomendable", Calidad_Oxidabilidad, ""),
+        if_else(Calidad_Germenes22C != "Recomendable", Calidad_Germenes22C, ""),
+        if_else(Calidad_Clostridium != "Recomendable", Calidad_Clostridium, ""),
+        if_else(Calidad_Calcio != "Bajo", Calidad_Calcio, ""),
+        if_else(Calidad_Magnesio != "Bajo", Calidad_Magnesio, ""),
+        sep = ", "
+      )
+    )
+  ) %>%
+  arrange(Mes)
+colnames(resumen_por_mes)[ncol(resumen_por_mes)] <- "Evaluación_final"
+
+#Ahora la base de datos de cácncer de colon
+# Cargar librerías necesarias
+library(readxl)
+library(dplyr)
+library(stringr)
+
+# Cargar el archivo Excel (sin saltarse ninguna fila)
+datosCC <- read_excel("INPUT/DATA/03009d.xlsx", skip = 5)
+
+# Buscar la fila de Asturias, Principado de
+fila_asturias <- which(str_detect(datosCC[[1]], "Asturias, Principado de"))
+print(fila_asturias)
+
+# Buscar las filas que contienen "Cáncer de colon"
+filas_cancer_colon <- which(str_detect(datosCC[[1]], "Cáncer de colon"))
+print(filas_cancer_colon)
+
+# Encontrar la primera fila de Cáncer de colon mayor que la fila de Asturias
+filaCCdeAsturias <- min(filas_cancer_colon[filas_cancer_colon > fila_asturias])
+
+# Seleccionar la fila de "Asturias, Principado de", la fila de Cáncer de colon encontrada y las tres siguientes
+filas_seleccionadas <- c(fila_asturias, 
+                         filaCCdeAsturias, 
+                         filaCCdeAsturias + 1, 
+                         filaCCdeAsturias + 2, 
+                         filaCCdeAsturias + 3)
+
+# Filtrar las filas seleccionadas
+datos_seleccionados <- datosCC %>%
+  slice(filas_seleccionadas)
+
+# Cambiar los nombres de las columnas
+colnames(datos_seleccionados) <- c("info", "total", "enero", "febrero", "marzo", "abril", "mayo")
+
+
+#Creo la grafica, en este caso uno de barras sobre el cancer de colon
+# Cargar librerías necesarias
+library(ggplot2)
+library(tidyr)
+
+# Seleccionar la fila 'total' (fila 3) y las columnas de enero a mayo
+total_row <- datos_seleccionados[3, 3:7]  # Fila 3, columnas de enero a mayo
+
+# Convertir los datos a formato largo (meses en una columna)
+datos_long <- data.frame(mes = colnames(datos_seleccionados)[3:7],  # Nombres de las columnas de enero a mayo
+                         valor = as.numeric(total_row))  
+
+# Asegurar que los meses estén en el orden correcto
+datos_long$mes <- factor(datos_long$mes, levels = c("enero", "febrero", "marzo", "abril", "mayo"))
+
+# Crear el diagrama de barras con todas las barras en gris
+ggplot(datos_long, aes(x = mes, y = valor)) +
+  geom_bar(stat = "identity", fill = "gray") +  # Barras en color gris
+  labs(title = "Total de Cáncer de Colon por Mes",
+       x = "Mes",
+       y = "Total de Defunciones") +
+  theme_minimal()  # Tema minimalista
+  
+#Ahora la de la calidad de la agua
+ggplot(resumen_por_mes, aes(x = Mes, fill = Evaluación_final)) +
+  geom_bar(position = "dodge") +
+  labs(
+    title = "Resumen de la calidad del agua por mes",
+    x = "Mes",
+    y = "Cantidad de parámetros",
+    fill = "Evaluación Final"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+#Relacionado
+# Convertir los datos de muertes y calidad de agua a formato largo
+total_row_long <- total_row %>%
+  pivot_longer(cols = everything(), names_to = "Mes", values_to = "Muertes")
+
+# Asegurar que los nombres de los meses coincidan con los de resumen_por_mes
+total_row_long <- total_row_long %>%
+  mutate(Mes = toupper(Mes))
+# Convertir Evaluación_final a factor si es necesario
+resumen_por_mes <- resumen_por_mes %>%
+  mutate(Evaluación_final = as.factor(Evaluación_final))
+# Fusionar las tablas basándose en la columna `Mes`
+merged_data <- resumen_por_mes %>%
+  left_join(total_row_long, by = "Mes")
+#Grafico
+ggplot(merged_data, aes(x = Mes, y = Muertes, fill = Evaluación_final)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9), width = 0.7) +
+  labs(
+    title = "Muertes por cáncer de colon y calidad del agua por mes",
+    x = "Mes",
+    y = "Número de Muertes",
+    fill = "Calidad del Agua"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "right"  # Asegura que la leyenda aparezca a la derecha
+  )
+```
+
 
 ejercicio 3
 datos fumadores
@@ -522,375 +860,7 @@ ggplot(tabla_combinada, aes(x = Valor, y = Nitratos)) +
 
 ```
 
-```{r}
-#Ejercicio 2
-library(readr)
-library(dplyr)
-library(tidyr)
 
-# Cargar datos de calidad del agua, añadiendo la coma por decimales para los errores.
-Agua_gijon_ej2 <- read_delim("INPUT/DATA/123.csv", 
-                             delim = ";", 
-                             locale = locale(decimal_mark = ","),  # Coma como separador decimal
-                             escape_double = FALSE, 
-                             trim_ws = TRUE, 
-                             show_col_types = FALSE)
-
-
-# Asegurarse de que los nombres de los meses estén en mayúsculas
-Agua_gijon_ej2 <- Agua_gijon_ej2 %>%
-  mutate(Mes = toupper(Mes))
-
-# Filtrar datos para el año 2020 y los meses de enero a mayo
-datos_2020 <- Agua_gijon_ej2 %>%
-  filter(Año == 2020, Mes %in% c("ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO"))
-
-# Ordenar los meses
-datos_2020 <- datos_2020 %>%
-  mutate(
-    Mes = factor(Mes, levels = c("ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO"))
-  ) %>%
-  arrange(Mes)
-
-# Clasificación de la calidad para todos los parámetros del agua la mayoria segun la OMS
-calidad_componentes <- datos_2020 %>%
-  mutate(
-    Calidad_pH = case_when(
-      pH >= 6.5 & pH <= 8.5 ~ "Recomendable",
-      pH < 6.5 ~ "Ácida",
-      pH > 8.5 ~ "Alcalina",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Turbidez = case_when(
-      Turbidez <= 1 ~ "Recomendable",
-      Turbidez > 1 & Turbidez <= 5 ~ "Aceptable",
-      Turbidez > 5 ~ "Mala",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Cloro = case_when(
-      `Cloro Libre` <= 0.5 ~ "Recomendable",
-      `Cloro Libre` > 0.5 & `Cloro Libre` <= 1.5 ~ "Moderada",
-      `Cloro Libre` > 1.5 & `Cloro Libre` <= 4.0 ~ "Alta",
-      `Cloro Libre` > 4.0 ~ "Excesiva",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Color = case_when(
-      as.numeric(`Color Max: 15 Ud: pl/mg`) <= 15 ~ "Recomendable",
-      as.numeric(`Color Max: 15 Ud: pl/mg`) > 15 ~ "No Aceptable",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Olor = case_when(
-      Olor == 0 ~ "No aceptable",
-      Olor > 0 ~ "Recomendable",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Sabor = case_when(
-      Sabor == 0 ~ "No recomendable",
-      Sabor > 0 ~ "Recomendable",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Temperatura = case_when(
-      Temperatura <= 25 ~ "Recomendable",
-      Temperatura > 25 ~ "No Aceptable",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Cloruros = case_when(
-      Cloruros <= 250 ~ "Recomendable",
-      Cloruros > 250 ~ "Alta",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Fluor = case_when(
-      Fluor <= 1.5 ~ "Recomendable",
-      Fluor > 1.5 ~ "No Aceptable",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Sodio = case_when(
-      Sodio <= 200 ~ "Recomendable",
-      Sodio > 200 ~ "Alta",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Aluminio = case_when(
-      Aluminio <= 0.2 ~ "Recomendable",
-      Aluminio > 0.2 ~ "Alta",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Trihalometanos = case_when(
-      Trihalometanos <= 100 ~ "Recomendable",
-      Trihalometanos > 100 ~ "Alta",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Oxidabilidad = case_when(
-      Oxidabilidad <= 5 ~ "Recomendable",
-      Oxidabilidad > 5 ~ "Alta",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Germenes22C = case_when(
-      `Gérmenes Totales a 22ºC` <= 100 ~ "Recomendable",
-      `Gérmenes Totales a 22ºC` > 100 ~ "Alta",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Clostridium = case_when(
-      `Clostridium perfringens` == 0 ~ "Recomendable",
-      `Clostridium perfringens` > 0 ~ "No Aceptable",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Calcio = case_when(
-      Calcio <= 100 ~ "Bajo",
-      Calcio > 100 & Calcio <= 300 ~ "Moderado",
-      Calcio > 300 ~ "Alto",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Magnesio = case_when(
-      Magnesio <= 30 ~ "Bajo",
-      Magnesio > 30 & Magnesio <= 50 ~ "Moderado",
-      Magnesio > 50 ~ "Alto",
-      TRUE ~ "Desconocida"
-    )
-  )
-  
-#resumen de calidad por mes con columna final para el analisis
-resumen_por_mes <- calidad_componentes%>%
-  group_by(Mes) %>%
-  summarise(
-    Calidad_pH = case_when(
-      Calidad_pH == "Recomendable" ~ "Recomendable",
-      Calidad_pH == "Ácida" ~ "Ácida",
-      Calidad_pH == "Alcalina" ~ "Alcalina",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Turbidez = case_when(
-      Calidad_Turbidez == "Recomendable" ~ "Recomendable",
-      Calidad_Turbidez == "Aceptable" ~ "Aceptable",
-      Calidad_Turbidez == "Mala" ~ "Mala",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Cloro = case_when(
-      Calidad_Cloro == "Recomendable" ~ "Recomendable",
-      Calidad_Cloro == "Moderada" ~ "Moderada",
-      Calidad_Cloro == "Alta" ~ "Alta",
-      Calidad_Cloro == "Excesiva" ~ "Excesiva",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Color = case_when(
-      Calidad_Color == "Recomendable" ~ "Recomendable",
-      Calidad_Color == "No Aceptable" ~ "No Aceptable",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Olor = case_when(
-      Calidad_Olor == "No aceptable" ~ "No aceptable",
-      Calidad_Olor == "Recomendable" ~ "Recomendable",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Sabor = case_when(
-      Calidad_Sabor == "No recomendable" ~ "No recomendable",
-      Calidad_Sabor == "Recomendable" ~ "Recomendable",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Temperatura = case_when(
-      Calidad_Temperatura == "Recomendable" ~ "Recomendable",
-      Calidad_Temperatura == "No Aceptable" ~ "No Aceptable",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Cloruros = case_when(
-      Calidad_Cloruros == "Recomendable" ~ "Recomendable",
-      Calidad_Cloruros == "Alta" ~ "Alta",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Fluor = case_when(
-      Calidad_Fluor == "Recomendable" ~ "Recomendable",
-      Calidad_Fluor == "No Aceptable" ~ "No Aceptable",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Sodio = case_when(
-      Calidad_Sodio == "Recomendable" ~ "Recomendable",
-      Calidad_Sodio == "Alta" ~ "Alta",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Aluminio = case_when(
-      Calidad_Aluminio == "Recomendable" ~ "Recomendable",
-      Calidad_Aluminio == "Alta" ~ "Alta",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Trihalometanos = case_when(
-      Calidad_Trihalometanos == "Recomendable" ~ "Recomendable",
-      Calidad_Trihalometanos == "Alta" ~ "Alta",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Oxidabilidad = case_when(
-      Calidad_Oxidabilidad == "Recomendable" ~ "Recomendable",
-      Calidad_Oxidabilidad == "Alta" ~ "Alta",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Germenes22C = case_when(
-      Calidad_Germenes22C == "Recomendable" ~ "Recomendable",
-      Calidad_Germenes22C == "Alta" ~ "Alta",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Clostridium = case_when(
-      Calidad_Clostridium == "Recomendable" ~ "Recomendable",
-      Calidad_Clostridium == "No Aceptable" ~ "No Aceptable",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Calcio = case_when(
-      Calidad_Calcio == "Bajo" ~ "Bajo",
-      Calidad_Calcio == "Moderado" ~ "Moderado",
-      Calidad_Calcio == "Alto" ~ "Alto",
-      TRUE ~ "Desconocida"
-    ),
-    Calidad_Magnesio = case_when(
-      Calidad_Magnesio == "Bajo" ~ "Bajo",
-      Calidad_Magnesio == "Moderado" ~ "Moderado",
-      Calidad_Magnesio == "Alto" ~ "Alto",
-      TRUE ~ "Desconocida"
-    )
-  ) %>%
-  mutate(
-    BuenEstado = case_when(
-      Calidad_pH == "Recomendable" & 
-      Calidad_Turbidez == "Recomendable" & 
-      Calidad_Cloro == "Recomendable" & 
-      Calidad_Color == "Recomendable" &
-      Calidad_Olor == "Recomendable" & 
-      Calidad_Sabor == "Recomendable" & 
-      Calidad_Temperatura == "Recomendable" & 
-      Calidad_Cloruros == "Recomendable" &
-      Calidad_Fluor == "Recomendable" & 
-      Calidad_Sodio == "Recomendable" & 
-      Calidad_Aluminio == "Recomendable" & 
-      Calidad_Trihalometanos == "Recomendable" & 
-      Calidad_Oxidabilidad == "Recomendable" & 
-      Calidad_Germenes22C == "Recomendable" & 
-      Calidad_Clostridium == "Recomendable" & 
-      Calidad_Calcio == "Bajo" & 
-      Calidad_Magnesio == "Bajo" ~ "Recomendable",
-      TRUE ~ paste(
-        if_else(Calidad_pH != "Recomendable", Calidad_pH, ""),
-        if_else(Calidad_Turbidez != "Recomendable", Calidad_Turbidez, ""),
-        if_else(Calidad_Cloro != "Recomendable", Calidad_Cloro, ""),
-        if_else(Calidad_Color != "Recomendable", Calidad_Color, ""),
-        if_else(Calidad_Olor != "Recomendable", Calidad_Olor, ""),
-        if_else(Calidad_Sabor != "Recomendable", Calidad_Sabor, ""),
-        if_else(Calidad_Temperatura != "Recomendable", Calidad_Temperatura, ""),
-        if_else(Calidad_Cloruros != "Recomendable", Calidad_Cloruros, ""),
-        if_else(Calidad_Fluor != "Recomendable", Calidad_Fluor, ""),
-        if_else(Calidad_Sodio != "Recomendable", Calidad_Sodio, ""),
-        if_else(Calidad_Aluminio != "Recomendable", Calidad_Aluminio, ""),
-        if_else(Calidad_Trihalometanos != "Recomendable", Calidad_Trihalometanos, ""),
-        if_else(Calidad_Oxidabilidad != "Recomendable", Calidad_Oxidabilidad, ""),
-        if_else(Calidad_Germenes22C != "Recomendable", Calidad_Germenes22C, ""),
-        if_else(Calidad_Clostridium != "Recomendable", Calidad_Clostridium, ""),
-        if_else(Calidad_Calcio != "Bajo", Calidad_Calcio, ""),
-        if_else(Calidad_Magnesio != "Bajo", Calidad_Magnesio, ""),
-        sep = ", "
-      )
-    )
-  ) %>%
-  arrange(Mes)
-colnames(resumen_por_mes)[ncol(resumen_por_mes)] <- "Evaluación_final"
-```
-
-```{r}
-#Ahora la base de datos de cácncer de colon
-# Cargar librerías necesarias
-library(readxl)
-library(dplyr)
-library(stringr)
-
-# Cargar el archivo Excel (sin saltarse ninguna fila)
-datosCC <- read_excel("INPUT/DATA/03009d.xlsx", skip = 5)
-
-# Buscar la fila de Asturias, Principado de
-fila_asturias <- which(str_detect(datosCC[[1]], "Asturias, Principado de"))
-print(fila_asturias)
-
-# Buscar las filas que contienen "Cáncer de colon"
-filas_cancer_colon <- which(str_detect(datosCC[[1]], "Cáncer de colon"))
-print(filas_cancer_colon)
-
-# Encontrar la primera fila de Cáncer de colon mayor que la fila de Asturias
-filasCCdeAsturias <- min(filas_cancer_colon[filas_cancer_colon > fila_asturias])
-
-# Seleccionar la fila de "Asturias, Principado de", la fila de Cáncer de colon encontrada y las tres siguientes
-resultados <- c(fila_asturias, 
-                         filasCCdeAsturias, 
-                         filasCCdeAsturias + 1, 
-                         filasCCdeAsturias + 2, 
-                         filasCCdeAsturias + 3)
-
-# Filtrar las filas seleccionadas
-tabla_resultadosCCAsturias <- datosCC %>%
-  slice(resultados)
-
-# Cambiar los nombres de las columnas
-colnames(tabla_resultadosCCAsturias) <- c("info", "total", "enero", "febrero", "marzo", "abril", "mayo")
-
-```
-
-```{r}
-#Creo la grafica, en este caso uno de barras sobre el cancer de colon
-# Cargar librerías necesarias
-library(ggplot2)
-library(tidyr)
-
-# Seleccionar la fila 'total' (fila 3) y las columnas de enero a mayo
-totalCC_Asturias <- tabla_resultadosCCAsturias[3, 3:7]  # Fila 3, columnas de enero a mayo
-
-# Convertir los datos a formato largo (meses en una columna)
-datos_long <- data.frame(mes = colnames(tabla_resultadosCCAsturias)[3:7],  # Nombres de las columnas de enero a mayo
-                         valor = as.numeric(totalCC_Asturias))  
-
-# Asegurar que los meses estén en el orden correcto
-datos_long$mes <- factor(datos_long$mes, levels = c("enero", "febrero", "marzo", "abril", "mayo"))
-
-# Crear el diagrama de barras con todas las barras en gris
-ggplot(datos_long, aes(x = mes, y = valor)) +
-  geom_bar(stat = "identity", fill = "gray") +  
-  labs(title = "Total de Cáncer de Colon por Mes",
-       x = "Mes",
-       y = "Total de Defunciones") +
-  theme_minimal()  # Tema minimalista
-  
-#Ahora la de la calidad de la agua
-ggplot(resumen_por_mes, aes(x = Mes, fill = Evaluación_final)) +
-  geom_bar(position = "dodge") +
-  labs(
-    title = "Resumen de la calidad del agua por mes",
-    x = "Mes",
-    y = "Cantidad de parámetros",
-    fill = "Evaluación Final"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-#Relacionado
-# Convertir los datos de muertes y calidad de agua a formato largo
-total_row_long <- total_row %>%
-  pivot_longer(cols = everything(), names_to = "Mes", values_to = "Muertes")
-
-# Asegurar que los nombres de los meses coincidan con los de resumen_por_mes
-total_row_long <- total_row_long %>%
-  mutate(Mes = toupper(Mes))
-# Convertir Evaluación_final a factor si es necesario
-resumen_por_mes <- resumen_por_mes %>%
-  mutate(Evaluación_final = as.factor(Evaluación_final))
-# Fusionar las tablas basándose en la columna `Mes`
-merged_data <- resumen_por_mes %>%
-  left_join(total_row_long, by = "Mes")
-#Grafico
-ggplot(merged_data, aes(x = Mes, y = Muertes, fill = Evaluación_final)) +
-  geom_bar(stat = "identity", position = position_dodge(width = 0.9), width = 0.7) +
-  labs(
-    title = "Muertes por cáncer de colon y calidad del agua por mes",
-    x = "Mes",
-    y = "Número de Muertes",
-    fill = "Calidad del Agua"
-  ) +
-  theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    legend.position = "right"  # Asegura que la leyenda aparezca a la derecha
-  )
-```
 
 
 
