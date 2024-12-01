@@ -1,5 +1,5 @@
 ---
-title: "seminario fuentes sobre el impacto del agua y el tabaquismo en el cancer de colon"
+title: "impacto del agua y el tabaquismo en el cancer de colon"
 subtitle: "Fuentes de datos Biomédicas y Web semántica, Grado de Ingeniería de la Salud"
 author: "Álvaro Martín,Miguel Soriano, Andres Arribas"
 date: "`r Sys.Date()`"
@@ -35,8 +35,8 @@ El propósito principal de este estudio es explorar y entender la relación entr
 
 A través de estos objetivos, esperamos proporcionar una visión más completa de cómo estos factores pueden influir en la salud humana y contribuir al conocimiento de la incidencia del cáncer de colon.
 
-# Importación de las librerias necesarias 
-En este apartado añadimos todas las librerias necesarias para realizar el trabajo
+# Importación de las librerias y paquetes necesarios
+En este apartado añadimos todas las librerias y paquetesnecesarios para realizar el trabajo
 ```{r}
 library(tidyverse)
 library(readxl)
@@ -44,6 +44,8 @@ library(readr)
 library(jsonlite)
 library(dplyr)
 library(tidyr)
+library(reshape2)
+install.packages("reshape2")
 ```
 # Importacion de las fuentes de datos 
 
@@ -64,13 +66,6 @@ summary(Agua_gijon)
 #View(Agua_gijon)
 table(Agua_gijon$T.RED)
 
-
-#carga de datos json sobre los fumadores en asturias incluyendo a gijon
-#esta hay que abrirla bien
-# Cargar las librerías necesarias
-library(tidyverse)
-library(jsonlite)
-
 # Cargar el archivo JSON de fumadores y transformarlo en un tibble
 datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE) %>%
   as_tibble()
@@ -85,8 +80,7 @@ summary(datos_fumadores)
 
 
 #carga de cancer de colon
-# Cargar la librería necesaria
-library(readxl)
+
 
 # Cargar el archivo Excel, omitiendo las primeras 6 filas y usando la fila 7 como encabezado
 datosEnfermedades <- read_excel("INPUT/DATA/03009d.xlsx", skip = 5)
@@ -102,10 +96,6 @@ datosEnfermedades <- read_excel("INPUT/DATA/03009d.xlsx", skip = 5)
 
 
 ```{r}
-# Cargar librerías necesarias
-library(tidyverse)
-library(jsonlite)
-
 # Cargar el archivo JSON de fumadores
 datos_fumadores <- fromJSON("INPUT/DATA/Fumadores.json", flatten = TRUE) %>%
   as_tibble()
@@ -145,7 +135,7 @@ summary(datosEnfermedades)
 Este paso es necesario ya que al relacionar todas las tablas entre si necesitamos que aquellas columnas que son comunes tengan los mismos nombres, por ello se ha requerido que todos los nombres de las comunidades y ciudades autonomas presentes sean cambiados a nombres comunes elegidos por el grupo. Por otro lado hemos usado el select para seleccionar las columnas de datos que nos resultan de interes para el estudio.
 
 ```{r}
-agua_gijon <- agua_gijons%>%
+agua_gijon <- agua_gijon%>%
   mutate(
     CCAA= case_when( ## cambiamos el nombre con un case_When
       fumadores$`Comunidades y Ciudades Autónomas`== "Andalucía" ~ "Andalucia",
@@ -197,10 +187,6 @@ summary(cancer_colon)
 ```
 
 ```{r}
-# Cargar las librerías necesarias
-library(dplyr)
-library(tidyr)
-
 # Paso 1: Filtrar y preparar los datos de tabaquismo para Asturias
 # Aquí trabajamos con la tabla fumadores_asturias_final ya filtrada para Asturias
 fumadores_asturias_prevalencia <- fumadores_asturias_final %>%
@@ -473,13 +459,6 @@ print(correlaciones)
 ```
 
 grafica con los resultados obtenidos
-
-```{r}
-install.packages("reshape2")
-library(reshape2)
-
-```
-
 ```{r}
 # Convertir la tabla de calidad del agua a formato largo
 calidad_agua_long <- calidad_agua_2023 %>%
