@@ -56,14 +56,13 @@ En este apartado añadimos las diferentes fuentes de datos que hemos utilizado p
 datos_paisVasco <- read_excel("INPUT/DATA/control_analitico.xlsx")
 str(datos_paisVasco)
 summary(datos_paisVasco)
-#View(datos_paisVasco)
+
 
 #carga de datos csv sobre calidad de agua en gijon
 Agua_gijon <- read_delim("INPUT/DATA/731.csv", 
                       delim = ",", escape_double = FALSE, trim_ws = TRUE)
 Agua_gijon
 summary(Agua_gijon)
-#View(Agua_gijon)
 table(Agua_gijon$T.RED)
 
 # Cargar el archivo JSON de fumadores y transformarlo en un tibble
@@ -75,7 +74,6 @@ datos_fumadores <- datos_fumadores %>%
   separate(Nombre, into = c("Sexo", "Region", "Categoria"), sep = ", ", fill = "right")
 
 # Visualizar los datos para confirmar la estructura
-#View(datos_fumadores)
 summary(datos_fumadores)
 
 
@@ -86,7 +84,6 @@ summary(datos_fumadores)
 datosEnfermedades <- read_excel("INPUT/DATA/03009d.xlsx", skip = 5)
 
 # Visualizar la tabla general
-#View(datosEnfermedades)
 #summary(datosEnfermedades)
 
 
@@ -556,7 +553,7 @@ datos_2020 <- datos_2020 %>%
   arrange(Mes)
 
 # Clasificación de la calidad para todos los parámetros del agua la mayoria segun la OMS
-data_clean <- datos_2020 %>%
+calidad_componentes <- datos_2020 %>%
   mutate(
     Calidad_pH = case_when(
       pH >= 6.5 & pH <= 8.5 ~ "Recomendable",
@@ -652,7 +649,7 @@ data_clean <- datos_2020 %>%
   )
   
 #resumen de calidad por mes con columna final para el analisis
-resumen_por_mes <- data_clean%>%
+resumen_por_mes <- calidad_componentes%>%
   group_by(Mes) %>%
   summarise(
     Calidad_pH = case_when(
@@ -811,21 +808,21 @@ filas_cancer_colon <- which(str_detect(datosCC[[1]], "Cáncer de colon"))
 print(filas_cancer_colon)
 
 # Encontrar la primera fila de Cáncer de colon mayor que la fila de Asturias
-filaCCdeAsturias <- min(filas_cancer_colon[filas_cancer_colon > fila_asturias])
+filasCCdeAsturias <- min(filas_cancer_colon[filas_cancer_colon > fila_asturias])
 
 # Seleccionar la fila de "Asturias, Principado de", la fila de Cáncer de colon encontrada y las tres siguientes
-filas_seleccionadas <- c(fila_asturias, 
-                         filaCCdeAsturias, 
-                         filaCCdeAsturias + 1, 
-                         filaCCdeAsturias + 2, 
-                         filaCCdeAsturias + 3)
+resultados <- c(fila_asturias, 
+                         filasCCdeAsturias, 
+                         filasCCdeAsturias + 1, 
+                         filasCCdeAsturias + 2, 
+                         filasCCdeAsturias + 3)
 
 # Filtrar las filas seleccionadas
-datos_seleccionados <- datosCC %>%
-  slice(filas_seleccionadas)
+tabla_resultadosCCAsturias <- datosCC %>%
+  slice(resultados)
 
 # Cambiar los nombres de las columnas
-colnames(datos_seleccionados) <- c("info", "total", "enero", "febrero", "marzo", "abril", "mayo")
+colnames(tabla_resultadosCCAsturias) <- c("info", "total", "enero", "febrero", "marzo", "abril", "mayo")
 
 ```
 
@@ -836,18 +833,18 @@ library(ggplot2)
 library(tidyr)
 
 # Seleccionar la fila 'total' (fila 3) y las columnas de enero a mayo
-total_row <- datos_seleccionados[3, 3:7]  # Fila 3, columnas de enero a mayo
+totalCC_Asturias <- tabla_resultadosCCAsturias[3, 3:7]  # Fila 3, columnas de enero a mayo
 
 # Convertir los datos a formato largo (meses en una columna)
-datos_long <- data.frame(mes = colnames(datos_seleccionados)[3:7],  # Nombres de las columnas de enero a mayo
-                         valor = as.numeric(total_row))  
+datos_long <- data.frame(mes = colnames(tabla_resultadosCCAsturias)[3:7],  # Nombres de las columnas de enero a mayo
+                         valor = as.numeric(totalCC_Asturias))  
 
 # Asegurar que los meses estén en el orden correcto
 datos_long$mes <- factor(datos_long$mes, levels = c("enero", "febrero", "marzo", "abril", "mayo"))
 
 # Crear el diagrama de barras con todas las barras en gris
 ggplot(datos_long, aes(x = mes, y = valor)) +
-  geom_bar(stat = "identity", fill = "gray") +  # Barras en color gris
+  geom_bar(stat = "identity", fill = "gray") +  
   labs(title = "Total de Cáncer de Colon por Mes",
        x = "Mes",
        y = "Total de Defunciones") +
