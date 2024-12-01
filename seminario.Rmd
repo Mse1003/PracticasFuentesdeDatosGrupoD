@@ -267,7 +267,7 @@ tabla_combinada %>%
 
 ```
 #Conclusion
-conlcuir apartado 1
+Los gráficos muestran una relación positiva entre la prevalencia de tabaquismo y los casos ponderados de cáncer de colon, siendo más marcada en hombres. Sin embargo, el mayor número de casos en el grupo "Nunca ha fumado" sugiere que otros factores, como predisposición genética o ambientales, podrían influir.
 -------------------------------------------------------------------------------------------
 
 
