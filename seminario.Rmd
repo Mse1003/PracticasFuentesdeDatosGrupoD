@@ -127,7 +127,6 @@ summary(datosEnfermedades)
 
 # Cambios en las fuentes de datos y operaciones con estas
 Este paso es necesario ya que al relacionar todas las tablas entre si necesitamos que aquellas columnas que son comunes tengan los mismos nombres, por ello se ha requerido que todos los nombres de las comunidades y ciudades autonomas presentes sean cambiados a nombres comunes elegidos por el grupo. Por otro lado hemos usado el select para seleccionar las columnas de datos que nos resultan de interes para el estudio.
-
 ```{r}
 agua_gijon <- agua_gijon%>%
   mutate(
