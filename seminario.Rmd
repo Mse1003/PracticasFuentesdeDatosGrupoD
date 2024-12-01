@@ -156,53 +156,6 @@ select(`CCAA`,`Consumo de tabaco`,Total,) %>%
   filter(`Consumo de tabaco` != "TOTAL")
 fumadores
 
-#cancer de colon filtrado por hombre y mujer
-# Cargar la librería necesaria
-library(readxl)
-library(dplyr)
-
-# Cargar el archivo Excel, omitiendo las filas iniciales de encabezado
-datosEnfermedades <- read_excel("INPUT/DATA/03009d.xlsx", skip = 5)
-
-# Filtrar filas relevantes para "Cáncer de colon" y sus subtotales
-cancer_colon <- datosEnfermedades %>%
-  filter(str_detect(datosEnfermedades[[1]], "Cáncer de colon|Total|Hombres|Mujeres")) %>%
-  slice(which(str_detect(datosEnfermedades[[1]], "Cáncer de colon")):
-        (which(str_detect(datosEnfermedades[[1]], "Cáncer de colon")) + 3))
-
-# Visualizar los datos filtrados de Cáncer de colon
-#View(cancer_colon)
-summary(cancer_colon)
-
-# Paso 1: Filtrar y preparar los datos de tabaquismo para Asturias
-# Aquí trabajamos con la tabla fumadores_asturias_final ya filtrada para Asturias
->>>>>>> baca0924586aa14eaadbfb24bc85aa8e0b330093
-fumadores_asturias_prevalencia <- fumadores_asturias_final %>%
-  filter(Categoria %in% c("Fumador diario", "Ex fumador")) %>%
-  select(Sexo, Categoria, Valor) %>%
-  spread(key = Categoria, value = Valor)
-  
-cancer_colon_asturias <- datosEnfermedades %>%
-  filter(grepl("Cáncer de colon", .[[1]], ignore.case = TRUE)) %>%
-  select(-1) %>%
-  gather(key = "Mes", value = "Defunciones", -1)
-  
-cancer_colon_promedio <- cancer_colon_asturias %>%
-  group_by(Mes) %>%
-  summarise(Defunciones = mean(Defunciones, na.rm = TRUE))
-
-# Calcular la media de prevalencia de fumadores (Fumador diario y Ex fumador)
-fumadores_promedio <- fumadores_asturias_prevalencia %>%
-  summarise(Fumador_diario = mean(`Fumador diario`, na.rm = TRUE),
-            Ex_fumador = mean(`Ex fumador`, na.rm = TRUE))
-
-# Combinar ambos conjuntos de datos y calcular la correlación entre la prevalencia de fumadores diarios y defunciones por cáncer de colon
-correlacion_fumador_diario <- cor(cancer_colon_promedio$Defunciones, fumadores_promedio$Fumador_diario, use = "complete.obs")
-correlacion_ex_fumador <- cor(cancer_colon_promedio$Defunciones, fumadores_promedio$Ex_fumador, use = "complete.obs")
-
-
-print(paste("Correlación entre fumadores diarios y defunciones por cáncer de colon:", correlacion_fumador_diario))
-print(paste("Correlación entre ex fumadores y defunciones por cáncer de colon:", correlacion_ex_fumador))
 
 ```
 
