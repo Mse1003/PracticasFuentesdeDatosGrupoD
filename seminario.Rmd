@@ -193,52 +193,6 @@ cancer_colon <- datosEnfermedades %>%
 summary(cancer_colon)
 ```
 
-```{r}
-# Cargar las librerías necesarias
-library(dplyr)
-library(tidyr)
-
-# Paso 1: Filtrar y preparar los datos de tabaquismo para Asturias
-# Aquí trabajamos con la tabla fumadores_asturias_final ya filtrada para Asturias
-fumadores_asturias_prevalencia <- fumadores_asturias_final %>%
-  filter(Categoria %in% c("Fumador diario", "Ex fumador")) %>%
-  select(Sexo, Categoria, Valor) %>%
-  spread(key = Categoria, value = Valor)
-
-# Visualizar la prevalencia de fumadores en Asturias
-#View(fumadores_asturias_prevalencia)
-
-# Paso 2: Preparar los datos de cáncer de colon para Asturias (ya específico para Asturias en la carga inicial)
-# Seleccionar solo las columnas que contienen datos mensuales
-cancer_colon_asturias <- datosEnfermedades %>%
-  filter(grepl("Cáncer de colon", .[[1]], ignore.case = TRUE)) %>%
-  select(-1) %>%
-  gather(key = "Mes", value = "Defunciones", -1)
-
-# Visualizar los datos de defunciones por cáncer de colon en Asturias
-#View(cancer_colon_asturias)
-
-# Paso 3: Realizar el análisis de correlación entre tabaquismo y cáncer de colon
-
-# Calcular la media de defunciones de cáncer de colon para cada mes
-cancer_colon_promedio <- cancer_colon_asturias %>%
-  group_by(Mes) %>%
-  summarise(Defunciones = mean(Defunciones, na.rm = TRUE))
-
-# Calcular la media de prevalencia de fumadores (Fumador diario y Ex fumador)
-fumadores_promedio <- fumadores_asturias_prevalencia %>%
-  summarise(Fumador_diario = mean(`Fumador diario`, na.rm = TRUE),
-            Ex_fumador = mean(`Ex fumador`, na.rm = TRUE))
-
-# Combinar ambos conjuntos de datos y calcular la correlación entre la prevalencia de fumadores diarios y defunciones por cáncer de colon
-correlacion_fumador_diario <- cor(cancer_colon_promedio$Defunciones, fumadores_promedio$Fumador_diario, use = "complete.obs")
-correlacion_ex_fumador <- cor(cancer_colon_promedio$Defunciones, fumadores_promedio$Ex_fumador, use = "complete.obs")
-
-
-print(paste("Correlación entre fumadores diarios y defunciones por cáncer de colon:", correlacion_fumador_diario))
-print(paste("Correlación entre ex fumadores y defunciones por cáncer de colon:", correlacion_ex_fumador))
-
-
 ```
 fumadores ejercicio 1
 ```{r}
@@ -389,7 +343,7 @@ Agua_gijon <- Agua_gijon %>%
 print(Agua_gijon$Mes)
 
 ```
-en teoria esta celda no es necesaria pero no borrar
+Ésta celda no es necesaria pero no borrar, pero no ejecutar
 ```{r}
 
 #cambiar nombres del mes
@@ -954,13 +908,22 @@ print(tabla_combinada)
 ```
 
 ```{r}
-# Calcular correlaciones entre tabaquismo, calidad del agua y cáncer
+# Identificar columnas con variabilidad
+columnas_validas <- tabla_combinada %>%
+  select(Valor, pH, Nitratos, Conductividad, `Bacterías Coliformes`) %>%
+  summarise(across(everything(), sd, na.rm = TRUE)) %>%
+  pivot_longer(everything(), names_to = "Variable", values_to = "SD") %>%
+  filter(SD > 0) %>%
+  pull(Variable)
+
+# Calcular correlaciones solo para las columnas con variabilidad
 correlaciones_conjuntas <- tabla_combinada %>%
-  select(valor, pH, Nitratos, Conductividad, `Bacterías Coliformes`) %>%
-  summarise(across(everything(), ~ cor(., tabla_combinada$valor, use = "complete.obs")))
+  select(all_of(columnas_validas)) %>%
+  summarise(across(everything(), ~ cor(., tabla_combinada$Valor, use = "complete.obs")))
 
 # Mostrar correlaciones
 print(correlaciones_conjuntas)
+
 
 # Visualizar en un mapa de calor
 library(reshape2)
@@ -978,34 +941,3 @@ ggplot(correlaciones_melt, aes(x = Var1, y = Var2, fill = value)) +
 
 ```
 
-```{r}
-ggplot(tabla_combinada, aes(x = valor, y = `Bacterías Coliformes`)) +
-  geom_point() +
-  geom_smooth(method = "lm", color = "blue") +
-  labs(title = "Relación entre tabaquismo y bacterias coliformes",
-       x = "Nivel de Tabaquismo",
-       y = "Bacterias Coliformes Promedio") +
-  theme_minimal()
-
-```
-
-```{r}
-ggplot(tabla_combinada, aes(x = `Nitratos`, y = valor)) +
-  geom_point() +
-  geom_smooth(method = "lm", color = "green") +
-  labs(title = "Relación entre nitratos en el agua y tabaquismo",
-       x = "Nitratos promedio",
-       y = "Nivel de Tabaquismo") +
-  theme_minimal()
-
-```
-
-```{r}
-ggplot(tabla_combinada, aes(x = valor, y = `pH`, color = `Bacterías Coliformes`)) +
-  geom_point() +
-  labs(title = "Interacción entre tabaquismo, pH y bacterias coliformes",
-       x = "Nivel de Tabaquismo",
-       y = "pH del Agua") +
-  theme_minimal()
-
-```
