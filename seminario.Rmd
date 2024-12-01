@@ -46,8 +46,8 @@ library(tidyr)
 library(reshape2)
 install.packages("reshape2")
 ```
-# Importacion de las fuentes de datos 
 
+# Importacion de las fuentes de datos 
 En este apartado añadimos las diferentes fuentes de datos que hemos utilizado para el estudio directamente utilizando los formatos csv y JSON para poder manipular los datos
 ```{r}
 #esta base de datos tiene informacion pero no es relevante al ser del pais vasco
@@ -119,26 +119,6 @@ summary(datosEnfermedades)
 
 # Cambios en las fuentes de datos
 Este paso es necesario ya que al relacionar todas las tablas entre si necesitamos que aquellas columnas que son comunes tengan los mismos nombres, por ello se ha requerido que todos los nombres de las comunidades y ciudades autonomas presentes sean cambiados a nombres comunes elegidos por el grupo. Por otro lado hemos usado el select para seleccionar las columnas de datos que nos resultan de interes para el estudio.
-
-
-=======
-#cancer de colon filtrado por hombre y mujer
-# Cargar la librería necesaria
-library(readxl)
-library(dplyr)
-
-# Cargar el archivo Excel, omitiendo las filas iniciales de encabezado
-datosEnfermedades <- read_excel("INPUT/DATA/03009d.xlsx", skip = 5)
-
-# Filtrar filas relevantes para "Cáncer de colon" y sus subtotales
-cancer_colon <- datosEnfermedades %>%
-  filter(str_detect(datosEnfermedades[[1]], "Cáncer de colon|Total|Hombres|Mujeres")) %>%
-  slice(which(str_detect(datosEnfermedades[[1]], "Cáncer de colon")):
-        (which(str_detect(datosEnfermedades[[1]], "Cáncer de colon")) + 3))
-
-# Visualizar los datos filtrados de Cáncer de colon
-#View(cancer_colon)
-summary(cancer_colon)
 
 fumadores ejercicio 1
 ```{r}
