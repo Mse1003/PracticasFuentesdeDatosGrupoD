@@ -304,7 +304,7 @@ datos_2020 <- datos_2020 %>%
   arrange(Mes)
 
 # Clasificación de la calidad para todos los parámetros del agua la mayoria segun la OMS
-data_clean <- datos_2020 %>%
+calidad_OMS <- datos_2020 %>%
   mutate(
     Calidad_pH = case_when(
       pH >= 6.5 & pH <= 8.5 ~ "Recomendable",
@@ -400,7 +400,7 @@ data_clean <- datos_2020 %>%
   )
   
 #resumen de calidad por mes con columna final para el analisis
-resumen_por_mes <- data_clean%>%
+resumen_por_mes <- calidad_OMS%>%
   group_by(Mes) %>%
   summarise(
     Calidad_pH = case_when(
@@ -621,10 +621,10 @@ total_row_long <- total_row_long %>%
 resumen_por_mes <- resumen_por_mes %>%
   mutate(Evaluación_final = as.factor(Evaluación_final))
 # Fusionar las tablas basándose en la columna `Mes`
-merged_data <- resumen_por_mes %>%
+datos_merged <- resumen_por_mes %>%
   left_join(total_row_long, by = "Mes")
 #Grafico
-ggplot(merged_data, aes(x = Mes, y = Muertes, fill = Evaluación_final)) +
+ggplot(datos_merged, aes(x = Mes, y = Muertes, fill = Evaluación_final)) +
   geom_bar(stat = "identity", position = position_dodge(width = 0.9), width = 0.7) +
   labs(
     title = "Muertes por cáncer de colon y calidad del agua por mes",
@@ -639,8 +639,9 @@ ggplot(merged_data, aes(x = Mes, y = Muertes, fill = Evaluación_final)) +
   )
 ```
 #Conclusion:
-conlcuir apartado 2
--------------------------------------------------------------------------------------------
+#Como podemos observar en la tabla de datos calidad_OMS el agua de gijón es apta para el consumo humano, teniendo muy buen tratamiento para ello. Los meses de febrero y marzo, la calidad de la turbidez es aceptable y la del cloro moderada respectivamente, pero nada fuera de lo señalado por la OMS como correcto. Por lo que el grado de salubridad es bueno y óptimo.
+#Por otro lado, aunque no sea viable conectar la calidad del agua de enero a a mayo de 2020, con las muertes por cáncer de colon de estos meses, ya que hay que hacer un análisis a largo plazo, al ver que la calidad del agua es salubre se puede intuir que no afecta al cáncer de colon. A demás se puede ver enero y febrero con 33 fallecidos, marzo con 34, abril baja a 21 y mayo a 23, esto no son numeros tan significativos como para determinar que la calidad del agua en gijón ha influenciado en los fallecidos para el cáncer de colon, habra que determinarlo con estudios biológicos.
+
 
 
 ## Pregunta 3
