@@ -36,7 +36,8 @@ El propósito principal de este estudio es explorar y entender la relación entr
 A través de estos objetivos, esperamos proporcionar una visión más completa de cómo estos factores pueden influir en la salud humana y contribuir al conocimiento de la incidencia del cáncer de colon.
 
 # Importación de las librerias y paquetes necesarios
-En este apartado añadimos todas las librerias y paquetesnecesarios para realizar el trabajo
+En este apartado añadimos todas las librerias y paquetes necesarios para realizar el trabajo
+
 ```{r}
 library(tidyverse)
 library(readxl)
@@ -47,8 +48,8 @@ library(tidyr)
 library(reshape2)
 install.packages("reshape2")
 ```
-# Importacion de las fuentes de datos 
 
+# Importacion de las fuentes de datos 
 En este apartado añadimos las diferentes fuentes de datos que hemos utilizado para el estudio directamente utilizando los formatos csv y JSON para poder manipular los datos
 ```{r}
 #esta base de datos tiene informacion pero no es relevante al ser del pais vasco
@@ -206,7 +207,8 @@ print(paste("Correlación entre ex fumadores y defunciones por cáncer de colon:
 
 ```
 
-## Pregunta 1: ¿cual es la incidencia del tabaquismo en asturias?¿Hay relacion con el cancer de colon? En caso de haberla, ¿Como afecta dicha relacion?
+## Pregunta 1 
+#¿cual es la incidencia del tabaquismo en asturias?¿Hay relacion con el cancer de colon? En caso de haberla, ¿Como afecta dicha relacion?
 ```{r}
 # Extraer solo los campos necesarios del JSON
 fumadores_asturias <- datos_fumadores %>%
@@ -312,8 +314,13 @@ tabla_combinada %>%
 
 
 ```
+#Conclusion
+conlcuir apartado 1
+-------------------------------------------------------------------------------------------
 
-## Pregunta 2: ¿cual es la incidencia del tabaquismo en asturias?¿Hay relacion con el cancer de colon? En caso de haberla, ¿Como afecta dihca relacion?
+
+## Pregunta 2
+#A nivel de calidad del agua de Gijon, ¿Que tan bueno es el tratamiento que se le realiza al agua para que sea potable y ademas lo mas pura y limpia posible?¿Se considera que tiene buen nivel de salubridad?¿Hay relacion con el cancer de colon? En caso de haberla, ¿Como afecta dicha relacion?
 ```{r}
 #Ejercicio 2
 library(readr)
@@ -679,10 +686,13 @@ ggplot(merged_data, aes(x = Mes, y = Muertes, fill = Evaluación_final)) +
     legend.position = "right"  # Asegura que la leyenda aparezca a la derecha
   )
 ```
+#Conclusion:
+conlcuir apartado 2
+-------------------------------------------------------------------------------------------
 
 
-ejercicio 3
-datos fumadores
+## Pregunta 3
+#¿Que incidencia tiene el cancer de colon en la region asturiana? Teniendo en cuenta los dos anteriores puntos, ¿Como se relacionan estos 3 aspectos en su conjunto?
 ```{r}
 # Cargar los datos de tabaquismo ya procesados
 fumadores_asturias <- fumadores_asturias %>%
@@ -703,21 +713,13 @@ fumadores_asturias <- fumadores_asturias %>%
 # Verificar los datos finales
 print(fumadores_asturias)
 
-```
-datos agua
-
-convertir todos los meses en mayuscula
-```{r}
+#tratamiento de los datos del agua
 # Convertir los nombres de los meses a mayúsculas
 Agua_gijon <- Agua_gijon %>%
   mutate(Mes = toupper(Mes))
 
 # Verificar los datos para asegurarse de que los meses están en mayúsculas
 print(Agua_gijon$Mes)
-
-```
-Ésta celda no es necesaria pero no borrar, pero no ejecutar
-```{r}
 
 #cambiar nombres del mes
 # Diccionario de mapeo entre los nombres actuales y los nombres estándar
@@ -743,9 +745,6 @@ Agua_gijon <- Agua_gijon %>%
 # Verificar los datos para asegurarse de que los meses han cambiado
 print(Agua_gijon$Mes)
 
-```
-
-```{r}
 # Filtrar solo datos del año 2023
 datos_2023 <- Agua_gijon %>%
   filter(Año == 2023) %>%  # Mantener solo el año 2023
@@ -770,10 +769,6 @@ calidad_agua_2023 <- calidad_agua_2023 %>%
 # Verificar la tabla ordenada
 print(calidad_agua_2023)
 
-```
-
-relacionar tablas
-```{r}
 # Combinar las tablas de tabaquismo y calidad del agua
 tabla_combinada <- fumadores_asturias %>%
   inner_join(calidad_agua_2023, by = "Mes")  # Unir tablas por el Mes común
@@ -781,9 +776,7 @@ tabla_combinada <- fumadores_asturias %>%
 # Verificar la tabla combinada
 print(tabla_combinada)
 
-```
-corelacion entre los datos
-```{r}
+#CORRELACION DE DATOS
 # Calcular correlaciones entre todas las variables cuantitativas de la tabla combinada
 correlaciones <- tabla_combinada %>%
   select(where(is.numeric)) %>%  # Seleccionar solo columnas numéricas
@@ -794,10 +787,7 @@ print(correlaciones)
 
 
 
-```
-
-grafica con los resultados obtenidos
-```{r}
+#GRAFICO DE LOS RESULTADOS OBTENIDOS
 # Convertir la tabla de calidad del agua a formato largo
 calidad_agua_long <- calidad_agua_2023 %>%
   pivot_longer(cols = -Mes, names_to = "Variable", values_to = "Valor")
@@ -818,9 +808,6 @@ ggplot(calidad_agua_long_filtrado, aes(x = Mes, y = Valor, fill = Variable)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-```
-
-```{r}
 # Convertir la tabla de calidad del agua a formato largo
 calidad_agua_long <- calidad_agua_2023 %>%
   pivot_longer(cols = -Mes, names_to = "Variable", values_to = "Valor")
@@ -845,9 +832,6 @@ ggplot(calidad_agua_long_filtrado, aes(x = Mes, y = Variable, fill = Valor)) +
     axis.text.y = element_text(size = 10)
   )
 
-```
-
-```{r}
 library(ggplot2)
 
 # Crear el gráfico con la columna correcta
@@ -862,39 +846,12 @@ ggplot(tabla_combinada, aes(x = Valor, y = Nitratos)) +
   theme_minimal()
 
 ```
+#conclusion
+concluir apartado 3
+-------------------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-ejercicio numero 4
-
+##Pregunta 4
+#Habiendose realizado las pertinentes investigaciones en los puntos anteriores, ¿Como podemos relacionar todos estos aspectos en conjunto y que podemos determinar con ello?
 ```{r}
 # Unir tabaquismo y calidad del agua
 tabla_combinada <- fumadores_asturias %>%
@@ -903,9 +860,6 @@ tabla_combinada <- fumadores_asturias %>%
 # Verificar la tabla combinada
 print(tabla_combinada)
 
-```
-
-```{r}
 # Identificar columnas con variabilidad
 columnas_validas <- tabla_combinada %>%
   select(Valor, pH, Nitratos, Conductividad, `Bacterías Coliformes`) %>%
@@ -938,4 +892,14 @@ ggplot(correlaciones_melt, aes(x = Var1, y = Var2, fill = value)) +
   theme_minimal()
 
 ```
+#Conclusion
+concluir apartado 4
+
+##Bibliografia:
+```{r}
+
+
+```
+
+##Conclusion final:
 
