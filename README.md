@@ -86,7 +86,7 @@ Por último, este objetivo lo escogimos para realizar una comparacion final entr
 |:------------------------|:--------------------------------------------------------------------------------------------|
 | calidad agua                          | [CSV](https://datos.gob.es/es/catalogo/l01330241-calidad-del-agua-de-consumo-humano)                |
 | fumadores                          | [JSON](https://www.ine.es/jaxi/files/tpx/csv_bd/48011.Json)                   |
-| cancer colon                         | [XML](https://datos.gob.es/es/catalogo/ea0010587-defunciones-por-causas-mas-frecuentes-comunidad-y-ciudad-autonoma-de-defuncion-periodo-y-sexo-ecm-identificador-api-t15-p417-covid-l0-03009d-px1.xml) |
+| cancer colon                         | [XML](https://datos.gob.es/es/catalogo/ea0010587-defunciones-por-causas-mas-frecuentes-comunidad-y-ciudad-autonoma-de-defuncion-periodo-y-sexo-ecm-identificador-api-t15-p417-covid-l0-03009d-px1) |
 
 
 
