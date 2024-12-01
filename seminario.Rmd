@@ -36,7 +36,7 @@ El propósito principal de este estudio es explorar y entender la relación entr
 A través de estos objetivos, esperamos proporcionar una visión más completa de cómo estos factores pueden influir en la salud humana y contribuir al conocimiento de la incidencia del cáncer de colon.
 
 # Importación de algunos paquetes y librerias necesarios
-En este apartado añadimos todas las librerias y paquetesnecesarios para realizar el trabajo
+En este apartado añadimos todas las librerias y paquetes necesarios para realizar el trabajo
 ```{r}
 library(tidyverse)
 library(readxl)
@@ -44,9 +44,11 @@ library(readr)
 library(jsonlite)
 library(dplyr)
 library(tidyr)
+library(purrr)
+library(stringr)
 library(reshape2)
-install.packages("reshape2")
 ```
+
 
 # Importacion de las fuentes de datos 
 En este apartado añadimos las diferentes fuentes de datos que hemos utilizado para el estudio directamente utilizando los formatos csv y JSON para poder manipular los datos
