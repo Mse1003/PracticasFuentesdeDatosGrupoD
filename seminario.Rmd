@@ -267,7 +267,7 @@ tabla_combinada %>%
 
 ```
 #Conclusion
-Los gráficos muestran una relación positiva entre la prevalencia de tabaquismo y los casos ponderados de cáncer de colon, siendo más marcada en hombres. Sin embargo, el mayor número de casos en el grupo "Nunca ha fumado" sugiere que otros factores, como predisposición genética o ambientales, podrían influir.
+#Los gráficos muestran una relación positiva entre la prevalencia de tabaquismo y los casos ponderados de cáncer de colon, siendo más marcada en hombres. Sin embargo, el mayor número de casos en el grupo "Nunca ha fumado" sugiere que otros factores, como predisposición genética o ambientales, podrían influir.
 -------------------------------------------------------------------------------------------
 
 
@@ -800,7 +800,7 @@ ggplot(tabla_combinada, aes(x = Valor, y = Nitratos)) +
 
 ```
 #conclusion
-concluir apartado 3
+#Los resultados del ejercicio 3 indican una débil correlación entre algunos parámetros de calidad del agua como los nitrato y la incidencia de cáncer de colon. Sin embargo estas relaciones no son concluyentes lo que sugiere que otros factores posiblemente sociales o ambientales podrían desempeñar un papel más relevante en la incidencia de la enfermedad en Asturias.
 -------------------------------------------------------------------------------------------
 
 ##Pregunta 4
