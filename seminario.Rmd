@@ -675,17 +675,17 @@ ggplot(resumen_por_mes, aes(x = Mes, fill = Evaluación_final)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 #Relacionado
 # Convertir los datos de muertes y calidad de agua a formato largo
-total_row_long <- total_row %>%
+totalCC_Asturias_columna <- totalCC_Asturias %>%
   pivot_longer(cols = everything(), names_to = "Mes", values_to = "Muertes")
 # Asegurar que los nombres de los meses coincidan con los de resumen_por_mes
-total_row_long <- total_row_long %>%
+totalCC_Asturias_columna <- totalCC_Asturias_columna %>%
   mutate(Mes = toupper(Mes))
 # Convertir Evaluación_final a factor si es necesario
 resumen_por_mes <- resumen_por_mes %>%
   mutate(Evaluación_final = as.factor(Evaluación_final))
 # Fusionar las tablas basándose en la columna `Mes`
 merged_data <- resumen_por_mes %>%
-  left_join(total_row_long, by = "Mes")
+  left_join(totalCC_Asturias_columna, by = "Mes")
 #Grafico
 ggplot(merged_data, aes(x = Mes, y = Muertes, fill = Evaluación_final)) +
   geom_bar(stat = "identity", position = position_dodge(width = 0.9), width = 0.7) +
